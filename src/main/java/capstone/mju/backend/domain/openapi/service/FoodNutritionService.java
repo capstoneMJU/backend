@@ -20,26 +20,47 @@ public class FoodNutritionService {
     private final FoodNutritionRepository foodRepo;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final FoodProperties ticketProperties;
+    private final FoodProperties foodProperties;
 
     public void fetchAndSaveFoodData() {
         int page = 1;
         boolean hasNext = true;
 
         while (hasNext) {
+            String baseUrl = foodProperties.getBaseUrl();
+            if (baseUrl.endsWith("/")) {
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+            }
+
+            String fullUrl = baseUrl + "/getFoodNtrCpntDbInq01";
+
             UriComponents uri = UriComponentsBuilder
-                    .fromHttpUrl(ticketProperties.getBaseUrl() + "/getFoodNtrCpntDbInq01")
-                    .queryParam("serviceKey", ticketProperties.getApikey())
+                    .fromHttpUrl(fullUrl)
+                    .queryParam("serviceKey", foodProperties.getApikey())
                     .queryParam("type", "json")
-                    .queryParam("numOfRows", 100)
                     .queryParam("pageNo", page)
-                    .build();
+                    .queryParam("numOfRows", 100)
+                    .build(false);
+
+            System.out.println("\u2705 호출 URL = " + uri.toUriString());
 
             String json = restTemplate.getForObject(uri.toUri(), String.class);
 
             try {
-                JsonNode items = objectMapper.readTree(json)
-                        .path("body").path("items").path("item");
+                System.out.println("\u2705 응답 내용 = " + json.substring(0, Math.min(json.length(), 500)));
+
+                JsonNode root = objectMapper.readTree(json);
+
+                JsonNode header = root.path("header");
+                String resultCode = header.path("resultCode").asText();
+                String resultMsg = header.path("resultMsg").asText();
+
+                System.out.println("\u2705 resultCode = " + resultCode);
+                System.out.println("\u2705 resultMsg = " + resultMsg);
+
+                JsonNode items = root.path("body").path("items");
+
+                System.out.println("\u2705 item count = " + (items.isArray() ? items.size() : 0));
 
                 if (!items.isArray() || items.size() == 0) {
                     hasNext = false;
@@ -50,13 +71,14 @@ public class FoodNutritionService {
                 while (iterator.hasNext()) {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
+                    System.out.println("\u2705 저장할 foodNmKr = " + food.getFoodNmKr());
                     foodRepo.save(food);
                 }
 
                 page++;
 
             } catch (Exception e) {
-                throw new RuntimeException("API 응답 파싱 실패: " + e.getMessage());
+                throw new RuntimeException("API 응답 파싱 실패: " + e.getMessage(), e);
             }
         }
     }

@@ -16,9 +16,9 @@ public class FoodNutrition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String foodNmKr;
-    private String foodCd;
-    private String itemReportNo;
+    private String foodNmKr; //식품명
+    private String foodCd;// 식품코드
+    private String itemReportNo; //품목제조보고번호
 
     private Double amtNum1; // 에너지
     private Double amtNum3; // 단백질
