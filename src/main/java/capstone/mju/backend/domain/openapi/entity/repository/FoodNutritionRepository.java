@@ -11,5 +11,4 @@ public interface FoodNutritionRepository extends JpaRepository<FoodNutrition, Lo
     Optional<FoodNutrition> findByFoodCd(String foodCd); //푸드
     Page<FoodNutrition> findByFoodNmKrContaining(String keyword, Pageable pageable); //상품명 입력
     Page<FoodNutrition> findByItemReportNoContaining(String itemReportNo, Pageable pageable); //품목제조보고번호 입력
-
 }

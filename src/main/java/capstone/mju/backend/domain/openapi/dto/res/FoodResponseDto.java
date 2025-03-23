@@ -35,11 +35,10 @@ public class FoodResponseDto {
     private Double amtNum61;
 
     private String foodOrNm;
-    private String foodCat1Cd;
     private String foodCat1Nm;
-    private String foodRefCd;
     private String foodRefNm;
-    private String foodCat2Cd;
+    private String nutri_amount_serving;
+    private String z10500;
 
     public static FoodResponseDto fromEntity(FoodNutrition entity) {
         return FoodResponseDto.builder()
@@ -65,10 +64,10 @@ public class FoodResponseDto {
                 .amtNum59(entity.getAmtNum59())
                 .amtNum61(entity.getAmtNum61())
                 .foodOrNm(entity.getFoodOrNm())
-                .foodCat1Cd(entity.getFoodCat1Cd())
                 .foodCat1Nm(entity.getFoodCat1Nm())
-                .foodRefCd(entity.getFoodRefCd())
                 .foodRefNm(entity.getFoodRefNm())
+                .nutri_amount_serving(entity.getNutri_amount_serving())
+                .z10500(entity.getZ10500())
                 .build();
     }
 }

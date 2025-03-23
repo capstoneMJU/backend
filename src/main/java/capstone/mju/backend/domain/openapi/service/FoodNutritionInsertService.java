@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -15,6 +16,7 @@ import java.util.Iterator;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FoodNutritionInsertService {
 
     private final FoodNutritionRepository foodRepository;
@@ -22,11 +24,6 @@ public class FoodNutritionInsertService {
     private final ObjectMapper objectMapper;
     private final FoodProperties foodProperties;
 
-
-
-
-
-    //---------------------------상품명 DB에 입력-------------------------
     public void fetchAndSaveFoodData() {
         int page = 1;
         boolean hasNext = true;
@@ -47,12 +44,12 @@ public class FoodNutritionInsertService {
                     .queryParam("numOfRows", 100)
                     .build(false);
 
-            System.out.println("\u2705 호출 URL = " + uri.toUriString());
+            log.info("호출 URL = {}", uri.toUriString());
 
             String json = restTemplate.getForObject(uri.toUri(), String.class);
 
             try {
-                System.out.println("\u2705 응답 내용 = " + json.substring(0, Math.min(json.length(), 500)));
+                log.debug("응답 내용 = {}", json.substring(0, Math.min(json.length(), 500)));
 
                 JsonNode root = objectMapper.readTree(json);
 
@@ -60,14 +57,15 @@ public class FoodNutritionInsertService {
                 String resultCode = header.path("resultCode").asText();
                 String resultMsg = header.path("resultMsg").asText();
 
-                System.out.println("\u2705 resultCode = " + resultCode);
-                System.out.println("\u2705 resultMsg = " + resultMsg);
+                log.info("resultCode = {}", resultCode);
+                log.info("resultMsg = {}", resultMsg);
 
                 JsonNode items = root.path("body").path("items");
 
-                System.out.println("\u2705 item count = " + (items.isArray() ? items.size() : 0));
+                int count = items.isArray() ? items.size() : 0;
+                log.info("item count = {}", count);
 
-                if (!items.isArray() || items.size() == 0) {
+                if (count == 0) {
                     hasNext = false;
                     break;
                 }
@@ -76,13 +74,14 @@ public class FoodNutritionInsertService {
                 while (iterator.hasNext()) {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
-                    System.out.println("\u2705 저장할 foodNmKr = " + food.getFoodNmKr());
+                    log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
                     foodRepository.save(food);
                 }
 
                 page++;
 
             } catch (Exception e) {
+                log.error("API 응답 파싱 실패", e);
                 throw new RuntimeException("API 응답 파싱 실패: " + e.getMessage(), e);
             }
         }
@@ -112,10 +111,10 @@ public class FoodNutritionInsertService {
         food.setAmtNum59(item.path("AMT_NUM59").asDouble(0));
         food.setAmtNum61(item.path("AMT_NUM61").asDouble(0));
         food.setFoodOrNm(item.path("FOOD_OR_NM").asText(null));
-        food.setFoodCat1Cd(item.path("FOOD_CAT1_CD").asText(null));
         food.setFoodCat1Nm(item.path("FOOD_CAT1_NM").asText(null));
-        food.setFoodRefCd(item.path("FOOD_REF_CD").asText(null));
         food.setFoodRefNm(item.path("FOOD_REF_NM").asText(null));
+        food.setNutri_amount_serving(item.path("NUTRI_AMOUNT_SERVING").asText(null));
+        food.setZ10500(item.path("Z10500").asText(null));
 
         return food;
     }
