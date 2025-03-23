@@ -14,10 +14,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FoodNutritionService {
+
     private final FoodNutritionRepository foodRepository;
+
     public List<FoodNameResponseDto> searchFoodNames(String keyword, int page) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(keyword, pageable);
+        return foods.map(FoodNameResponseDto::fromEntity).getContent();
+    }
+
+    public List<FoodNameResponseDto> searchByItemReportNo(String itemReportNo, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo, pageable);
         return foods.map(FoodNameResponseDto::fromEntity).getContent();
     }
 }

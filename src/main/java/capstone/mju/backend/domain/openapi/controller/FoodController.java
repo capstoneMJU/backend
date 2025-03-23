@@ -33,4 +33,14 @@ public class FoodController {
         return ResponseEntity.ok(result);
     }
 
+    //품목제조보고번호 입력
+    @GetMapping("/search-num")
+    public ResponseEntity<List<FoodNameResponseDto>> searchByItemReportNo(
+            @RequestParam String itemReportNo,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        List<FoodNameResponseDto> result = foodService.searchByItemReportNo(itemReportNo, page);
+        return ResponseEntity.ok(result);
+    }
+
 }
