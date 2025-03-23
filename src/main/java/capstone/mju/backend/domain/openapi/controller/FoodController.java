@@ -1,23 +1,36 @@
 package capstone.mju.backend.domain.openapi.controller;
 
+import capstone.mju.backend.domain.openapi.dto.res.FoodNameResponseDto;
+import capstone.mju.backend.domain.openapi.service.FoodNutritionInsertService;
 import capstone.mju.backend.domain.openapi.service.FoodNutritionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/foods")
 @RequiredArgsConstructor
 public class FoodController {
 
+    private final FoodNutritionInsertService foodInsertService;
     private final FoodNutritionService foodService;
 
     @PostMapping("/fetch")
     public ResponseEntity<String> fetchData() {
-        foodService.fetchAndSaveFoodData();
+        foodInsertService.fetchAndSaveFoodData();
         return ResponseEntity.ok("데이터 수집 완료");
     }
+
+    //상품명 입력
+    @GetMapping("/search-names")
+    public ResponseEntity<List<FoodNameResponseDto>> searchFoodNames(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        List<FoodNameResponseDto> result = foodService.searchFoodNames(keyword, page);
+        return ResponseEntity.ok(result);
+    }
+
 }
