@@ -74,13 +74,11 @@ public class FoodNutritionInsertService {
                 while (iterator.hasNext()) {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
+                    log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
 
-                    // itemReportNo로 중복 체크
-                    if (foodRepository.findByItemReportNo(food.getItemReportNo()).isEmpty()) {
-                        log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
+                    // 중복 체크 후 저장
+                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
                         foodRepository.save(food);
-                    } else {
-                        log.info("중복된 itemReportNo가 있어 저장하지 않았습니다. itemReportNo = {}", food.getItemReportNo());
                     }
                 }
 
@@ -92,6 +90,7 @@ public class FoodNutritionInsertService {
             }
         }
     }
+
 
     private FoodNutrition parseFoodItem(JsonNode item) {
         FoodNutrition food = new FoodNutrition();
