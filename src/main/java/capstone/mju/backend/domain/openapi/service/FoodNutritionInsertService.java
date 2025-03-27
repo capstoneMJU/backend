@@ -34,7 +34,7 @@ public class FoodNutritionInsertService {
                 baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
             }
 
-            String fullUrl = baseUrl + "/getFoodNtrCpntDbInq01";
+            String fullUrl = baseUrl + "/getFoodNtrCpntDbInq02";
 
             UriComponents uri = UriComponentsBuilder
                     .fromHttpUrl(fullUrl)
@@ -74,8 +74,14 @@ public class FoodNutritionInsertService {
                 while (iterator.hasNext()) {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
-                    log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
-                    foodRepository.save(food);
+
+                    // itemReportNo로 중복 체크
+                    if (foodRepository.findByItemReportNo(food.getItemReportNo()).isEmpty()) {
+                        log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
+                        foodRepository.save(food);
+                    } else {
+                        log.info("중복된 itemReportNo가 있어 저장하지 않았습니다. itemReportNo = {}", food.getItemReportNo());
+                    }
                 }
 
                 page++;
