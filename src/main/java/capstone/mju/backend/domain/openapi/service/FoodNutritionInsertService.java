@@ -75,11 +75,11 @@ public class FoodNutritionInsertService {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
                     log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
-
+                    foodRepository.save(food);
                     // 중복 체크 후 저장
-                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
-                        foodRepository.save(food);
-                    }
+//                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
+//                        foodRepository.save(food);
+//                    }
                 }
 
                 page++;
@@ -92,35 +92,39 @@ public class FoodNutritionInsertService {
     }
 
 
+
     private FoodNutrition parseFoodItem(JsonNode item) {
         FoodNutrition food = new FoodNutrition();
+
         food.setFoodNmKr(item.path("FOOD_NM_KR").asText(null));
         food.setFoodCd(item.path("FOOD_CD").asText(null));
         food.setItemReportNo(item.path("ITEM_REPORT_NO").asText(null));
-        food.setAmtNum1(item.path("AMT_NUM1").asDouble(0));
-        food.setAmtNum3(item.path("AMT_NUM3").asDouble(0));
-        food.setAmtNum4(item.path("AMT_NUM4").asDouble(0));
-        food.setAmtNum7(item.path("AMT_NUM7").asDouble(0));
-        food.setAmtNum8(item.path("AMT_NUM8").asDouble(0));
-        food.setAmtNum14(item.path("AMT_NUM14").asDouble(0));
-        food.setAmtNum24(item.path("AMT_NUM24").asDouble(0));
-        food.setAmtNum25(item.path("AMT_NUM25").asDouble(0));
-        food.setAmtNum26(item.path("AMT_NUM26").asDouble(0));
-        food.setAmtNum52(item.path("AMT_NUM52").asDouble(0));
-        food.setAmtNum53(item.path("AMT_NUM53").asDouble(0));
-        food.setAmtNum54(item.path("AMT_NUM54").asDouble(0));
-        food.setAmtNum55(item.path("AMT_NUM55").asDouble(0));
-        food.setAmtNum56(item.path("AMT_NUM56").asDouble(0));
-        food.setAmtNum57(item.path("AMT_NUM57").asDouble(0));
-        food.setAmtNum58(item.path("AMT_NUM58").asDouble(0));
-        food.setAmtNum59(item.path("AMT_NUM59").asDouble(0));
-        food.setAmtNum61(item.path("AMT_NUM61").asDouble(0));
-        food.setFoodOrNm(item.path("FOOD_OR_NM").asText(null));
-        food.setFoodCat1Nm(item.path("FOOD_CAT1_NM").asText(null));
-        food.setFoodRefNm(item.path("FOOD_REF_NM").asText(null));
-        food.setNutri_amount_serving(item.path("NUTRI_AMOUNT_SERVING").asText(null));
-        food.setZ10500(item.path("Z10500").asText(null));
+        food.setAmtNum1(item.path("AMT_NUM1").asDouble(0));  // 에너지
+        food.setAmtNum3(item.path("AMT_NUM3").asDouble(0));  // 단백질
+        food.setAmtNum4(item.path("AMT_NUM4").asDouble(0));  // 지방
+        food.setAmtNum6(item.path("AMT_NUM6").asDouble(0));  // 탄수화물
+        food.setAmtNum7(item.path("AMT_NUM7").asDouble(0));  // 당류
+        food.setAmtNum13(item.path("AMT_NUM13").asDouble(0));  // 나트륨
+        food.setAmtNum23(item.path("AMT_NUM23").asDouble(0));  // 콜레스테롤
+        food.setAmtNum24(item.path("AMT_NUM24").asDouble(0));  // 포화지방산
+        food.setAmtNum25(item.path("AMT_NUM25").asDouble(0));  // 트랜스지방산
+        food.setAmtNum51(item.path("AMT_NUM51").asDouble(0));  // 갈락토오스
+        food.setAmtNum52(item.path("AMT_NUM52").asDouble(0));  // 과당
+        food.setAmtNum53(item.path("AMT_NUM53").asDouble(0));  // 당알콜
+        food.setAmtNum54(item.path("AMT_NUM54").asDouble(0));  // 맥아당
+        food.setAmtNum55(item.path("AMT_NUM55").asDouble(0));  // 알룰로오스
+        food.setAmtNum56(item.path("AMT_NUM56").asDouble(0));  // 에리스리톨
+        food.setAmtNum57(item.path("AMT_NUM57").asDouble(0));  // 유당
+        food.setAmtNum58(item.path("AMT_NUM58").asDouble(0));  // 자당
+        food.setAmtNum60(item.path("AMT_NUM60").asDouble(0));  // 포도당
+        food.setFoodOrNm(item.path("FOOD_OR_NM").asText(null));  // 식품 기원명
+        food.setFoodCat1Nm(item.path("FOOD_CAT1_NM").asText(null));  // 식품 대분류명
+        food.setFoodRefNm(item.path("FOOD_REF_NM").asText(null));  // 대표 식품명
+        food.setNutri_amount_serving(item.path("NUTRI_AMOUNT_SERVING").asText(null));  // 1회 섭취참고량
+        food.setZ10500(item.path("Z10500").asText(null));  // 식품 중량
+        food.setSERVING_SIZE(item.path("SERVING_SIZE").asText(null));  // 1회 섭취량 (추가된 필드)
 
         return food;
     }
+
 }

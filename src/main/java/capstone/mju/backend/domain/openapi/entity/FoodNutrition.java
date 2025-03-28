@@ -35,49 +35,49 @@ public class FoodNutrition {
     private Double amtNum4; // 지방
 
     @Column(name = "carbohydrate")
-    private Double amtNum7; // 탄수화물
+    private Double amtNum6; // 탄수화물
 
     @Column(name = "sugars")
-    private Double amtNum8; // 당류
+    private Double amtNum7; // 당류
 
     @Column(name = "sodium")
-    private Double amtNum14; // 나트륨
+    private Double amtNum13; // 나트륨
 
     @Column(name = "cholesterol")
-    private Double amtNum24; // 콜레스테롤
+    private Double amtNum23; // 콜레스테롤
 
     @Column(name = "saturated_fat")
-    private Double amtNum25; // 포화지방산
+    private Double amtNum24; // 포화지방산
 
     @Column(name = "trans_fat")
-    private Double amtNum26; // 트랜스지방산
+    private Double amtNum25; // 트랜스지방산
 
     @Column(name = "galactose")
-    private Double amtNum52; // 갈락토오스
+    private Double amtNum51; // 갈락토오스
 
     @Column(name = "fructose")
-    private Double amtNum53; // 과당
+    private Double amtNum52; // 과당
 
     @Column(name = "sugar_alcohol")
-    private Double amtNum54; // 당알콜
+    private Double amtNum53; // 당알콜
 
     @Column(name = "maltose")
-    private Double amtNum55; // 맥아당
+    private Double amtNum54; // 맥아당
 
     @Column(name = "allulose")
-    private Double amtNum56; // 알룰로오스
+    private Double amtNum55; // 알룰로오스
 
     @Column(name = "erythritol")
-    private Double amtNum57; // 에리스리톨
+    private Double amtNum56; // 에리스리톨
 
     @Column(name = "lactose")
-    private Double amtNum58; // 유당
+    private Double amtNum57; // 유당
 
     @Column(name = "sucrose")
-    private Double amtNum59; // 자당
+    private Double amtNum58; // 자당
 
     @Column(name = "glucose")
-    private Double amtNum61; // 포도당
+    private Double amtNum60; // 포도당
 
     @Column(name = "food_origin_name")
     private String foodOrNm; // 식품 기원명
@@ -93,4 +93,7 @@ public class FoodNutrition {
 
     @Column(name = "food_weight")
     private String z10500; // 식품 중량
+
+    @Column(name = "serving_size")
+    private String SERVING_SIZE; //ex) 100g 당 ~ 제로는 355g~ 이런것
 }
