@@ -27,7 +27,7 @@ public enum ErrorCode {
     // 405 Using wrong HTTP Method
     WRONG_METHOD("4050", "허용되지 않은 메소드 입니다."),
 
-    // 409 Conflct
+    // 409 Conflict
     EMAIL_ALREADY_EXISTS("4090", "해당 이메일 사용자가 이미 존재합니다."),
 
     // 500 Server
@@ -38,7 +38,15 @@ public enum ErrorCode {
     NOT_NULL("9001", "필수값이 누락되었습니다."),
     NOT_BLANK("9001", "필수값이 빈 값이거나 공백으로 되어있습니다."),
     REGEX("9002", "형식에 맞지 않습니다. :"),
-    LENGTH("9003", "길이가 유효하지 않습니다. :");
+    LENGTH("9003", "길이가 유효하지 않습니다. :"),
+
+    // S3 관련 오류
+    EMPTY_FILE_EXCEPTION("6000", "파일이 비어 있습니다."),
+    IO_EXCEPTION_ON_IMAGE_UPLOAD("6001", "이미지 업로드 중 IO 예외가 발생했습니다."),
+    NO_FILE_EXTENSION("6002", "파일에 확장자가 없습니다."),
+    INVALID_FILE_EXTENSION("6003", "지원하지 않는 파일 확장자입니다."),
+    PUT_OBJECT_EXCEPTION("6004", "S3 업로드(PutObject)에 실패했습니다."),
+    IO_EXCEPTION_ON_IMAGE_DELETE("6005", "이미지 삭제 중 IO 예외가 발생했습니다.");
 
     private final String code;
     private final String message;
