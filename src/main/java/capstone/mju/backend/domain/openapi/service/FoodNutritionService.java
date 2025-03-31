@@ -18,11 +18,18 @@ public class FoodNutritionService {
 
     private final FoodNutritionRepository foodRepository;
 
-    //상품명 검색
+    //상품명 검색 -> 상품명 나옴
     public List<FoodNameResponseDto> searchFoodNames(String keyword, int page) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(keyword, pageable);
         return foods.map(FoodNameResponseDto::fromEntity).getContent();
+    }
+
+    //상품명 -> 영양성분
+    public List<FoodResponseDto> getFoodDetailsByFoodNameKr(String foodNmKr, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(foodNmKr,pageable);
+        return foods.map(FoodResponseDto::fromEntity).getContent();
     }
 
     //품목제조보고번호 검색 -> 상품명

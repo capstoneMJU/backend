@@ -33,7 +33,15 @@ public class FoodController {
         List<FoodNameResponseDto> result = foodService.searchFoodNames(keyword, page);
         return ResponseEntity.ok(result);
     }
-
+    //상품명 입력 -> 영양성분 표시
+    @GetMapping("/search-name-detail")
+    public ResponseEntity<List<FoodResponseDto>> searchFoodNameDetail(
+            @RequestParam String foodNmKr,
+            @RequestParam(defaultValue = "0") int page
+    ){
+        List<FoodResponseDto> result = foodService.getFoodDetailsByFoodNameKr(foodNmKr,page);
+        return ResponseEntity.ok(result);
+    }
     //품목제조보고 번호 입력 -> 상품명 추출
     @GetMapping("/search-num")
     public ResponseEntity<List<FoodNameResponseDto>> searchByItemReportNo(
