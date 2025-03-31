@@ -1,6 +1,6 @@
-package capstone.mju.backend.global.common.exception.dto;
+package capstone.mju.backend.domain.common.exception.dto;
 
-import capstone.mju.backend.global.common.exception.CustomException;
+import capstone.mju.backend.domain.common.exception.CustomException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
