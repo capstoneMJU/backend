@@ -35,33 +35,33 @@ public class FoodNamedetailResponse {
     private String totalWeight;      // 식품 총중량 (z10500)
     private String servingSize;      // 1회 섭취량 (SERVING_SIZE)
 
-    // 계산된 값 (총량 기준)
-    private Double scaledSugars;
-    private Double scaledSaturatedFat;
-    private Double scaledSodium;
-    private Double scaledEnergy;
+//    // 계산된 값 (총량 기준)
+//    private Double scaledSugars;
+//    private Double scaledSaturatedFat;
+//    private Double scaledSodium;
+//    private Double scaledEnergy;
 
     public static FoodNamedetailResponse fromEntity(FoodNutrition entity) {
-        double ratio = 1.0;
-
-        try {
-            String servingRaw = entity.getSERVING_SIZE();
-            String weightRaw = entity.getZ10500();
-
-            if (servingRaw != null && weightRaw != null &&
-                    !servingRaw.trim().isEmpty() && !weightRaw.trim().isEmpty()) {
-
-                double serving = Double.parseDouble(servingRaw.trim().replaceAll("[^\\d.]", ""));
-                double total = Double.parseDouble(weightRaw.trim().replaceAll("[^\\d.]", ""));
-
-                if (serving > 0) {
-                    ratio = total / serving;
-                    ratio = Math.round(ratio * 10.0) / 10.0;
-                }
-            }
-        } catch (NumberFormatException e) {
-            ratio = 1.0;
-        }
+//        double ratio = 1.0;
+//
+//        try {
+//            String servingRaw = entity.getSERVING_SIZE();
+//            String weightRaw = entity.getZ10500();
+//
+//            if (servingRaw != null && weightRaw != null &&
+//                    !servingRaw.trim().isEmpty() && !weightRaw.trim().isEmpty()) {
+//
+//                double serving = Double.parseDouble(servingRaw.trim().replaceAll("[^\\d.]", ""));
+//                double total = Double.parseDouble(weightRaw.trim().replaceAll("[^\\d.]", ""));
+//
+//                if (serving > 0) {
+//                    ratio = total / serving;
+//                    ratio = Math.round(ratio * 10.0) / 10.0;
+//                }
+//            }
+//        } catch (NumberFormatException e) {
+//            ratio = 1.0;
+//        }
 
         return FoodNamedetailResponse.builder()
                 .foodNmKr(entity.getFoodNmKr())
@@ -87,17 +87,17 @@ public class FoodNamedetailResponse {
                 .totalWeight(entity.getZ10500())
                 .servingSize(entity.getSERVING_SIZE())
 
-                // 🔽 소수점 1자리로 반올림된 스케일링 값들
-                .scaledSugars(roundToOneDecimal(entity.getAmtNum7() != null ? entity.getAmtNum7() * ratio : null))
-                .scaledSaturatedFat(roundToOneDecimal(entity.getAmtNum24() != null ? entity.getAmtNum24() * ratio : null))
-                .scaledSodium(roundToOneDecimal(entity.getAmtNum13() != null ? entity.getAmtNum13() * ratio : null))
-                .scaledEnergy(roundToOneDecimal(entity.getAmtNum1() != null ? entity.getAmtNum1() * ratio : null))
+//                //소수점 1자리로 반올림된 스케일링 값들
+//                .scaledSugars(roundToOneDecimal(entity.getAmtNum7() != null ? entity.getAmtNum7() * ratio : null))
+//                .scaledSaturatedFat(roundToOneDecimal(entity.getAmtNum24() != null ? entity.getAmtNum24() * ratio : null))
+//                .scaledSodium(roundToOneDecimal(entity.getAmtNum13() != null ? entity.getAmtNum13() * ratio : null))
+//                .scaledEnergy(roundToOneDecimal(entity.getAmtNum1() != null ? entity.getAmtNum1() * ratio : null))
 
                 .build();
     }
 
-    // 클래스 내 유틸
-    private static Double roundToOneDecimal(Double value) {
-        return value != null ? Math.round(value * 10.0) / 10.0 : null;
-    }
+//    // 클래스 내 유틸
+//    private static Double roundToOneDecimal(Double value) {
+//        return value != null ? Math.round(value * 10.0) / 10.0 : null;
+//    }
 }
