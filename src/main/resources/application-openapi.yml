@@ -1,0 +1,9 @@
+
+api:
+  base-url: "http://apis.data.go.kr/1471000/FoodNtrCpntDbInfo02"
+  apikey: "m1iXnydGfYQrBoqmvQd6l7EUn39kd9XLBDoK6mx00W/hzHe2w77aEFqTohNlwjN3fG2pBR2Tnweqc471CsF5ig=="
+naver:
+  news:
+    client-id: NFBCiQPMAwQTeOfJDxB1
+    client-secret: HlME8WFALO
+    url: https://openapi.naver.com/v1/search/news
