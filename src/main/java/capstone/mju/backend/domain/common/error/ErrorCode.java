@@ -1,4 +1,4 @@
-package capstone.mju.backend.global.common.error;
+package capstone.mju.backend.domain.common.error;
 
 
 import lombok.AllArgsConstructor;
