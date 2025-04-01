@@ -1,6 +1,6 @@
-package com.example.winterdeom.domain.auth.repository;
+package capstone.mju.backend.domain.auth.repository;
 
-import com.example.winterdeom.domain.user.domain.User;
+import capstone.mju.backend.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

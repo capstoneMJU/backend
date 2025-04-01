@@ -1,17 +1,19 @@
-package com.example.winterdeom.domain.auth.service;
+package capstone.mju.backend.domain.auth.service;
 
-import com.example.winterdeom.domain.auth.dto.request.LoginDto;
-import com.example.winterdeom.domain.auth.repository.AuthRepository;
-import com.example.winterdeom.domain.common.error.ErrorCode;
-import com.example.winterdeom.domain.common.exception.ConflictException;
-import com.example.winterdeom.domain.common.exception.NotFoundException;
-import com.example.winterdeom.domain.common.exception.UnauthorizedException;
-import com.example.winterdeom.domain.user.domain.User;
-import com.example.winterdeom.global.auth.JwtEncoder;
-import com.example.winterdeom.global.auth.JwtTokenProvider;
-import com.example.winterdeom.global.auth.PasswordHashEncryption;
+import capstone.mju.backend.domain.auth.dto.request.JoinDto;
+import capstone.mju.backend.domain.auth.repository.AuthRepository;
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.ConflictException;
+import capstone.mju.backend.domain.common.exception.NotFoundException;
+import capstone.mju.backend.domain.common.exception.UnauthorizedException;
+import capstone.mju.backend.domain.user.domain.User;
+import capstone.mju.backend.domain.user.dto.request.LoginDto;
+import capstone.mju.backend.global.auth.JwtEncoder;
+import capstone.mju.backend.global.auth.JwtTokenProvider;
+import capstone.mju.backend.global.auth.PasswordHashEncryption;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.time.Duration;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AuthService {
     private final AuthRepository authRepository;
     private final PasswordHashEncryption passwordHashEncryption;
@@ -27,15 +30,16 @@ public class AuthService {
     /*
     회원가입
      */
-    public void join(LoginDto loginDto, HttpServletResponse response) {
+    public void join(JoinDto joinDto, HttpServletResponse response) {
         // 이메일이 이미 존재하는지 확인
-        this.isEmailExist(loginDto.getEmail());
-        String encryptedPassword = this.passwordHashEncryption.encrypt(loginDto.getPassword());
+        this.isEmailExist(joinDto.getEmail());
+        String encryptedPassword = this.passwordHashEncryption.encrypt(joinDto.getPassword());
 
         // 이메일이 존재하지 않는다면 새로운 User 생성
         User user = User.builder()
-                .email(loginDto.getEmail())
+                .email(joinDto.getEmail())
                 .password(encryptedPassword)
+                .username(joinDto.getUsername())
                 .build();
 
         authRepository.save(user);
@@ -55,6 +59,7 @@ public class AuthService {
     login
      */
     public void login(LoginDto loginDto, HttpServletResponse response) {
+        log.info("login 진입");
         User user = this.authRepository.findByEmail(loginDto.getEmail());
 
         if(user == null) {
