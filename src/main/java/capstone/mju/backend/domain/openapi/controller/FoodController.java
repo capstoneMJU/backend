@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.openapi.controller;
 
 import capstone.mju.backend.domain.openapi.dto.res.FoodNameResponseDto;
+import capstone.mju.backend.domain.openapi.dto.res.FoodNamedetailResponse;
 import capstone.mju.backend.domain.openapi.dto.res.FoodResponseDto;
 import capstone.mju.backend.domain.openapi.service.FoodNutritionInsertService;
 import capstone.mju.backend.domain.openapi.service.FoodNutritionService;
@@ -35,11 +36,11 @@ public class FoodController {
     }
     //상품명 입력 -> 영양성분 표시
     @GetMapping("/search-name-detail")
-    public ResponseEntity<List<FoodResponseDto>> searchFoodNameDetail(
+    public ResponseEntity<List<FoodNamedetailResponse>> searchFoodNameDetail(
             @RequestParam String foodNmKr,
             @RequestParam(defaultValue = "0") int page
     ){
-        List<FoodResponseDto> result = foodService.getFoodDetailsByFoodNameKr(foodNmKr,page);
+        List<FoodNamedetailResponse> result = foodService.getFoodDetailsByFoodNameKr(foodNmKr,page);
         return ResponseEntity.ok(result);
     }
     //품목제조보고 번호 입력 -> 상품명 추출

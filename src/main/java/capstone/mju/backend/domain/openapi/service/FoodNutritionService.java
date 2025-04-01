@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.openapi.service;
 
 import capstone.mju.backend.domain.openapi.dto.res.FoodNameResponseDto;
+import capstone.mju.backend.domain.openapi.dto.res.FoodNamedetailResponse;
 import capstone.mju.backend.domain.openapi.dto.res.FoodResponseDto;
 import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
 import capstone.mju.backend.domain.openapi.entity.repository.FoodNutritionRepository;
@@ -9,11 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FoodNutritionService {
 
     private final FoodNutritionRepository foodRepository;
@@ -26,10 +29,10 @@ public class FoodNutritionService {
     }
 
     //상품명 -> 영양성분
-    public List<FoodResponseDto> getFoodDetailsByFoodNameKr(String foodNmKr, int page) {
+    public List<FoodNamedetailResponse> getFoodDetailsByFoodNameKr(String foodNmKr, int page) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(foodNmKr,pageable);
-        return foods.map(FoodResponseDto::fromEntity).getContent();
+        return foods.map(FoodNamedetailResponse::fromEntity).getContent();
     }
 
     //품목제조보고번호 검색 -> 상품명
