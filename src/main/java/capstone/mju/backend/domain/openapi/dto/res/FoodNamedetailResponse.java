@@ -55,7 +55,8 @@ public class FoodNamedetailResponse {
                 double total = Double.parseDouble(weightRaw.trim().replaceAll("[^\\d.]", ""));
 
                 if (serving > 0) {
-                    ratio = total / serving; // 총량 / 섭취량
+                    ratio = total / serving;
+                    ratio = Math.round(ratio * 10.0) / 10.0;
                 }
             }
         } catch (NumberFormatException e) {
@@ -65,7 +66,6 @@ public class FoodNamedetailResponse {
         return FoodNamedetailResponse.builder()
                 .foodNmKr(entity.getFoodNmKr())
                 .itemReportNo(entity.getItemReportNo())
-
                 .energy(entity.getAmtNum1())
                 .protein(entity.getAmtNum3())
                 .fat(entity.getAmtNum4())
@@ -84,15 +84,20 @@ public class FoodNamedetailResponse {
                 .lactose(entity.getAmtNum57())
                 .sucrose(entity.getAmtNum58())
                 .glucose(entity.getAmtNum60())
-
                 .totalWeight(entity.getZ10500())
                 .servingSize(entity.getSERVING_SIZE())
 
-                .scaledSugars(entity.getAmtNum7() != null ? entity.getAmtNum7() * ratio : null)
-                .scaledSaturatedFat(entity.getAmtNum24() != null ? entity.getAmtNum24() * ratio : null)
-                .scaledSodium(entity.getAmtNum13() != null ? entity.getAmtNum13() * ratio : null)
-                .scaledEnergy(entity.getAmtNum1() != null ? entity.getAmtNum1() * ratio : null)
+                // 🔽 소수점 1자리로 반올림된 스케일링 값들
+                .scaledSugars(roundToOneDecimal(entity.getAmtNum7() != null ? entity.getAmtNum7() * ratio : null))
+                .scaledSaturatedFat(roundToOneDecimal(entity.getAmtNum24() != null ? entity.getAmtNum24() * ratio : null))
+                .scaledSodium(roundToOneDecimal(entity.getAmtNum13() != null ? entity.getAmtNum13() * ratio : null))
+                .scaledEnergy(roundToOneDecimal(entity.getAmtNum1() != null ? entity.getAmtNum1() * ratio : null))
 
                 .build();
+    }
+
+    // 클래스 내 유틸
+    private static Double roundToOneDecimal(Double value) {
+        return value != null ? Math.round(value * 10.0) / 10.0 : null;
     }
 }
