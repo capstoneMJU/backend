@@ -1,10 +1,10 @@
-package com.example.winterdeom.global.auth;
+package capstone.mju.backend.global.auth;
 
-import com.example.winterdeom.domain.auth.repository.AuthRepository;
-import com.example.winterdeom.domain.common.error.ErrorCode;
-import com.example.winterdeom.domain.common.exception.NotFoundException;
-import com.example.winterdeom.domain.common.exception.UnauthorizedException;
-import com.example.winterdeom.domain.user.domain.User;
+import capstone.mju.backend.domain.auth.repository.AuthRepository;
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.NotFoundException;
+import capstone.mju.backend.domain.common.exception.UnauthorizedException;
+import capstone.mju.backend.domain.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;

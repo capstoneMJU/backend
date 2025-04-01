@@ -1,4 +1,4 @@
-package com.example.winterdeom.global.auth;
+package capstone.mju.backend.global.auth;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

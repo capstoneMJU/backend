@@ -1,4 +1,4 @@
-package com.example.winterdeom.global.auth.swagger;
+package capstone.mju.backend.global.auth.swagger;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;

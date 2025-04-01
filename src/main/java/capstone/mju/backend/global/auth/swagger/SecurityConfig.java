@@ -1,4 +1,4 @@
-package com.example.winterdeom.global.auth.swagger;
+package capstone.mju.backend.global.auth.swagger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

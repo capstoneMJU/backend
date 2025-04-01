@@ -1,9 +1,10 @@
-package com.example.winterdeom.global.auth;
+package capstone.mju.backend.global.auth;
 
-import com.example.winterdeom.domain.common.error.ErrorCode;
-import com.example.winterdeom.domain.common.exception.UnauthorizedException;
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Arrays;
 
 public class AuthenticationExtractor {

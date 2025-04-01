@@ -1,6 +1,6 @@
-package com.example.winterdeom.global.auth;
+package capstone.mju.backend.global.auth;
 
-import com.example.winterdeom.domain.user.domain.User;
+import capstone.mju.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

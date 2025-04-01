@@ -1,4 +1,4 @@
-package com.example.winterdeom.global.auth;
+package capstone.mju.backend.global.auth;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
