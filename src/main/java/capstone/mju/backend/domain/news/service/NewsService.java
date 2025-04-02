@@ -4,6 +4,7 @@ import capstone.mju.backend.domain.news.config.NewsProperties;
 import capstone.mju.backend.domain.news.dto.res.NewsResponseDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class NewsService {
     private final NewsProperties newsProperties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Getter
     private List<NewsResponseDto> cachedNews = new ArrayList<>();
 
     public void refreshNewsCache() {
@@ -43,10 +45,6 @@ public class NewsService {
 
         this.cachedNews = combined;
         System.out.println("뉴스 캐시 갱신 완료!");
-    }
-
-    public List<NewsResponseDto> getCachedNews() {
-        return cachedNews;
     }
 
     private List<NewsResponseDto> fetchNewsFromNaver(String keyword) {
