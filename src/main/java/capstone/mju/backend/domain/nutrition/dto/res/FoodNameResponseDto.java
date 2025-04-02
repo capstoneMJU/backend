@@ -1,6 +1,6 @@
-package capstone.mju.backend.domain.openapi.dto.res;
+package capstone.mju.backend.domain.nutrition.dto.res;
 
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import lombok.*;
 
 @Builder

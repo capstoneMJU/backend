@@ -1,6 +1,6 @@
-package capstone.mju.backend.domain.openapi.config;
+package capstone.mju.backend.domain.nutrition.config;
 
-import capstone.mju.backend.domain.openapi.service.FoodNutritionInsertService;
+import capstone.mju.backend.domain.nutrition.service.FoodNutritionInsertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

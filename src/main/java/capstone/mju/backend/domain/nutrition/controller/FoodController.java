@@ -1,10 +1,10 @@
-package capstone.mju.backend.domain.openapi.controller;
+package capstone.mju.backend.domain.nutrition.controller;
 
-import capstone.mju.backend.domain.openapi.dto.res.FoodNameResponseDto;
-import capstone.mju.backend.domain.openapi.dto.res.FoodNamedetailResponse;
-import capstone.mju.backend.domain.openapi.dto.res.FoodResponseDto;
-import capstone.mju.backend.domain.openapi.service.FoodNutritionInsertService;
-import capstone.mju.backend.domain.openapi.service.FoodNutritionService;
+import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
+import capstone.mju.backend.domain.nutrition.dto.res.FoodNamedetailResponse;
+import capstone.mju.backend.domain.nutrition.dto.res.FoodResponseDto;
+import capstone.mju.backend.domain.nutrition.service.FoodNutritionInsertService;
+import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
