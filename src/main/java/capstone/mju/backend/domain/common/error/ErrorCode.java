@@ -33,6 +33,8 @@ public enum ErrorCode {
     // 500 Server
     UNKNOWN_SERVER_ERROR("5000", "알 수 없는 서버 내부 오류. :"),
     UNKNOWN_DB_ERROR("5001", "JPA 오류가 발생하였습니다. :"),
+    NEWS_API_ERROR("5002", "뉴스 API 호출에 실패하였습니다."),
+    NEWS_PARSE_ERROR("5003", "뉴스 응답 파싱에 실패하였습니다."),
 
     // 900 Request Body
     NOT_NULL("9001", "필수값이 누락되었습니다."),
