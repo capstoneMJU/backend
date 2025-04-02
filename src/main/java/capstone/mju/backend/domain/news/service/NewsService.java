@@ -1,5 +1,7 @@
 package capstone.mju.backend.domain.news.service;
 
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.CustomException;
 import capstone.mju.backend.domain.news.config.NewsProperties;
 import capstone.mju.backend.domain.news.dto.res.NewsResponseDto;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -36,11 +39,10 @@ public class NewsService {
         combined.addAll(zeroCalorieNews);
         combined.addAll(aspartameNews);
 
-        // 날짜 최신순 정렬 (pubDate는 String이므로 파싱 필요)
         combined.sort((a, b) -> {
             ZonedDateTime dateA = ZonedDateTime.parse(a.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME);
             ZonedDateTime dateB = ZonedDateTime.parse(b.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME);
-            return dateB.compareTo(dateA); // 최신순
+            return dateB.compareTo(dateA);
         });
 
         this.cachedNews = combined;
@@ -49,6 +51,7 @@ public class NewsService {
 
     private List<NewsResponseDto> fetchNewsFromNaver(String keyword) {
         List<NewsResponseDto> resultList = new ArrayList<>();
+
         try {
             String query = URLEncoder.encode(keyword, "UTF-8");
             String apiURL = newsProperties.getUrl()
@@ -63,6 +66,12 @@ public class NewsService {
             con.setRequestProperty("X-Naver-Client-Id", newsProperties.getClientId());
             con.setRequestProperty("X-Naver-Client-Secret", newsProperties.getClientSecret());
 
+            int responseCode = con.getResponseCode();
+            if (responseCode != 200) {
+                throw new CustomException(ErrorCode.NEWS_API_ERROR,
+                        "Naver API 응답 코드: " + responseCode);
+            }
+
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
@@ -71,7 +80,13 @@ public class NewsService {
             }
             br.close();
 
-            JsonNode items = objectMapper.readTree(response.toString()).get("items");
+            JsonNode root = objectMapper.readTree(response.toString());
+            JsonNode items = root.get("items");
+
+            if (items == null || !items.isArray()) {
+                throw new CustomException(ErrorCode.NEWS_PARSE_ERROR,
+                        "items 필드가 null이거나 배열 형식이 아닙니다.");
+            }
 
             for (JsonNode item : items) {
                 NewsResponseDto dto = NewsResponseDto.builder()
@@ -83,8 +98,10 @@ public class NewsService {
                 resultList.add(dto);
             }
 
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.NEWS_API_ERROR, "네이버 API 호출 실패: " + e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException("뉴스 검색 실패 [" + keyword + "]", e);
+            throw new CustomException(ErrorCode.NEWS_PARSE_ERROR, "뉴스 응답 파싱 실패: " + e.getMessage());
         }
 
         return resultList;
