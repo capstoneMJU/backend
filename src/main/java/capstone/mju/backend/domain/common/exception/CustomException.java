@@ -1,6 +1,6 @@
-package capstone.mju.backend.global.common.exception;
+package capstone.mju.backend.domain.common.exception;
 
-import capstone.mju.backend.global.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.error.ErrorCode;
 import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException{

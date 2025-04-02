@@ -1,4 +1,4 @@
-package capstone.mju.backend.global.common;
+package capstone.mju.backend.domain.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

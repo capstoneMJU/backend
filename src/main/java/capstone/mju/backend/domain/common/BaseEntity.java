@@ -1,10 +1,9 @@
-package capstone.mju.backend.global.common;
+package capstone.mju.backend.domain.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 

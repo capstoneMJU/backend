@@ -1,10 +1,10 @@
-package capstone.mju.backend.global.common.exception.controller;
+package capstone.mju.backend.domain.common.exception.controller;
 
-import capstone.mju.backend.global.common.error.ErrorCode;
-import capstone.mju.backend.global.common.exception.CustomException;
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.CustomException;
 
-import capstone.mju.backend.global.common.exception.DtoValidationException;
-import capstone.mju.backend.global.common.exception.dto.ErrorResponseDto;
+import capstone.mju.backend.domain.common.exception.DtoValidationException;
+import capstone.mju.backend.domain.common.exception.dto.ErrorResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
