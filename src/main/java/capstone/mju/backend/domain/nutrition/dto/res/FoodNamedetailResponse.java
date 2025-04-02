@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.nutrition.dto.res;
 
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Getter
@@ -8,61 +9,76 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "식품 상세 정보 응답 DTO")
 public class FoodNamedetailResponse {
 
+    @Schema(description = "식품명", example = "김치")
     private String foodNmKr;         // 식품명
+
+    @Schema(description = "품목제조번호", example = "123456789")
     private String itemReportNo;     // 품목제조번호
 
+    @Schema(description = "에너지 (kcal)", example = "100.5")
     private Double energy;           // 에너지 (amtNum1)
+
+    @Schema(description = "단백질 (g)", example = "5.0")
     private Double protein;          // 단백질 (amtNum3)
+
+    @Schema(description = "지방 (g)", example = "3.5")
     private Double fat;              // 지방 (amtNum4)
+
+    @Schema(description = "탄수화물 (g)", example = "15.0")
     private Double carbohydrate;     // 탄수화물 (amtNum6)
+
+    @Schema(description = "당류 (g)", example = "5.0")
     private Double sugars;           // 당류 (amtNum7)
+
+    @Schema(description = "나트륨 (mg)", example = "200.0")
     private Double sodium;           // 나트륨 (amtNum13)
+
+    @Schema(description = "콜레스테롤 (mg)", example = "10.0")
     private Double cholesterol;      // 콜레스테롤 (amtNum23)
+
+    @Schema(description = "포화지방산 (g)", example = "1.0")
     private Double saturatedFat;     // 포화지방산 (amtNum24)
+
+    @Schema(description = "트랜스지방산 (g)", example = "0.5")
     private Double transFat;         // 트랜스지방산 (amtNum25)
+
+    @Schema(description = "갈락토오스 (g)", example = "0.1")
     private Double galactose;        // 갈락토오스 (amtNum51)
+
+    @Schema(description = "과당 (g)", example = "0.2")
     private Double fructose;         // 과당 (amtNum52)
+
+    @Schema(description = "당알콜 (g)", example = "0.3")
     private Double sugarAlcohol;     // 당알콜 (amtNum53)
+
+    @Schema(description = "맥아당 (g)", example = "0.4")
     private Double maltose;          // 맥아당 (amtNum54)
+
+    @Schema(description = "알룰로오스 (g)", example = "0.5")
     private Double allulose;         // 알룰로오스 (amtNum55)
+
+    @Schema(description = "에리스리톨 (g)", example = "0.6")
     private Double erythritol;       // 에리스리톨 (amtNum56)
+
+    @Schema(description = "유당 (g)", example = "0.7")
     private Double lactose;          // 유당 (amtNum57)
+
+    @Schema(description = "자당 (g)", example = "0.8")
     private Double sucrose;          // 자당 (amtNum58)
+
+    @Schema(description = "포도당 (g)", example = "0.9")
     private Double glucose;          // 포도당 (amtNum60)
 
+    @Schema(description = "식품 총중량 (g)", example = "500.0")
     private String totalWeight;      // 식품 총중량 (z10500)
+
+    @Schema(description = "1회 섭취량 (g)", example = "100.0")
     private String servingSize;      // 1회 섭취량 (SERVING_SIZE)
 
-//    // 계산된 값 (총량 기준)
-//    private Double scaledSugars;
-//    private Double scaledSaturatedFat;
-//    private Double scaledSodium;
-//    private Double scaledEnergy;
-
     public static FoodNamedetailResponse fromEntity(FoodNutrition entity) {
-//        double ratio = 1.0;
-//
-//        try {
-//            String servingRaw = entity.getSERVING_SIZE();
-//            String weightRaw = entity.getZ10500();
-//
-//            if (servingRaw != null && weightRaw != null &&
-//                    !servingRaw.trim().isEmpty() && !weightRaw.trim().isEmpty()) {
-//
-//                double serving = Double.parseDouble(servingRaw.trim().replaceAll("[^\\d.]", ""));
-//                double total = Double.parseDouble(weightRaw.trim().replaceAll("[^\\d.]", ""));
-//
-//                if (serving > 0) {
-//                    ratio = total / serving;
-//                    ratio = Math.round(ratio * 10.0) / 10.0;
-//                }
-//            }
-//        } catch (NumberFormatException e) {
-//            ratio = 1.0;
-//        }
-
         return FoodNamedetailResponse.builder()
                 .foodNmKr(entity.getFoodNmKr())
                 .itemReportNo(entity.getItemReportNo())
@@ -86,18 +102,6 @@ public class FoodNamedetailResponse {
                 .glucose(entity.getAmtNum60())
                 .totalWeight(entity.getZ10500())
                 .servingSize(entity.getSERVING_SIZE())
-
-//                //소수점 1자리로 반올림된 스케일링 값들
-//                .scaledSugars(roundToOneDecimal(entity.getAmtNum7() != null ? entity.getAmtNum7() * ratio : null))
-//                .scaledSaturatedFat(roundToOneDecimal(entity.getAmtNum24() != null ? entity.getAmtNum24() * ratio : null))
-//                .scaledSodium(roundToOneDecimal(entity.getAmtNum13() != null ? entity.getAmtNum13() * ratio : null))
-//                .scaledEnergy(roundToOneDecimal(entity.getAmtNum1() != null ? entity.getAmtNum1() * ratio : null))
-
                 .build();
     }
-
-//    // 클래스 내 유틸
-//    private static Double roundToOneDecimal(Double value) {
-//        return value != null ? Math.round(value * 10.0) / 10.0 : null;
-//    }
 }
