@@ -39,4 +39,8 @@ out/
 src/main/resources/application.properties
 
 #yml 파일 안올라가게 함.
-*.yml
+/src/main/resources/application-database.yml
+/src/main/resources/application-security.yml
+/src/main/resources/application-s3.yml
+/src/main/resources/application-openapi.yml
+/src/main/resources/application-ocr.yml
