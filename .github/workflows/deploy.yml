@@ -27,7 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    # (2) JDK 17 세팅
+    # (2) JDK 21 세팅
     - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
@@ -39,8 +39,8 @@ jobs:
       run: |
           echo "${{ secrets.APPLICATION_DATABASE_YML }}" | base64 --decode > src/main/resources/application-database.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" | base64 --decode > src/main/resources/application-s3.yml
-          echo "${{ secrets.APPLICATION_OAUTH2_YML }}" | base64 --decode > src/main/resources/application-security.yml
-          echo "${{ secrets.APPLICATION_MAP_YML }}" | base64 --decode > src/main/resources/application-openapi.yml
+          echo "${{ secrets.APPLICATION_SECURITY_YML }}" | base64 --decode > src/main/resources/application-security.yml
+          echo "${{ secrets.APPLICATION_OPENAPI_YML }}" | base64 --decode > src/main/resources/application-openapi.yml
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
