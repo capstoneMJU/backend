@@ -1,0 +1,18 @@
+spring:
+  config:
+    import:
+      - application-s3.yml
+      - application-openapi.yml
+      - application-database.yml
+      - application-ocr.yml
+      - application-security.yml
+  cache:
+    type: simple
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+  error:
+    include-exception: true
+    include-stacktrace: always
