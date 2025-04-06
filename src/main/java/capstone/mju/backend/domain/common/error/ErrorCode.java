@@ -12,6 +12,7 @@ public enum ErrorCode {
     INVALID_EMAIL("4001", "유효하지 않은 이메일 형식입니다."),
     INVALID_PASSWORD("4002", "유효하지 않는 비밀번호 형식입니다."),
     INVALID_NAME("4003", "유효하지 않는 이름 형식입니다."),
+    INVALID_SEARCH_KEYWORD("4004", "검색 키워드가 유효하지 않습니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED_USER("4010", "로그인 정보가 틀렸습니다."),
@@ -23,6 +24,7 @@ public enum ErrorCode {
     // 404 Not Found
     POST_NOT_FOUND("4040", "해당 포스트를 찾을 수 없습니다."),
     USER_NOT_FOUND("4041", "해당 유저를 찾을 수 없습니다. "),
+    FOOD_NOT_FOUND("4042", "해당하는 식품 데이터를 찾을 수 없습니다."),
 
     // 405 Using wrong HTTP Method
     WRONG_METHOD("4050", "허용되지 않은 메소드 입니다."),
@@ -35,6 +37,8 @@ public enum ErrorCode {
     UNKNOWN_DB_ERROR("5001", "JPA 오류가 발생하였습니다. :"),
     NEWS_API_ERROR("5002", "뉴스 API 호출에 실패하였습니다."),
     NEWS_PARSE_ERROR("5003", "뉴스 응답 파싱에 실패하였습니다."),
+    INTERNAL_SERVER_ERROR("5000", "서버 내부 오류가 발생했습니다."),
+
 
     // 900 Request Body
     NOT_NULL("9001", "필수값이 누락되었습니다."),
