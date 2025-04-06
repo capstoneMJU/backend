@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,7 +29,8 @@ public class NewsController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "뉴스 목록 조회 성공",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = NewsResponseDto.class)))),
-                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+                    @ApiResponse(responseCode = "502", description = "외부 뉴스 API 호출 실패 (NEWS_API_ERROR)"),
+                    @ApiResponse(responseCode = "500", description = "서버 내부 오류 (INTERNAL_SERVER_ERROR)")
             }
     )
     @GetMapping
