@@ -1,6 +1,6 @@
 package capstone.mju.backend.global.s3;
 
-import capstone.mju.backend.global.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.error.ErrorCode;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
