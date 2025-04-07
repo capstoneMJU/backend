@@ -24,10 +24,10 @@ public class FoodNutritionService {
     private final FoodNutritionRepository foodRepository;
 
     // 상품명 검색 -> 상품명 나열
-    public List<FoodNameResponseDto> searchFoodNames(String keyword, int page) {
-        validateSearchKeyword(keyword);
+    public List<FoodNameResponseDto> searchFoodNames(String foodNmKr, int page) {
+        validateSearchKeyword(foodNmKr);
         Pageable pageable = PageRequest.of(page, 10);
-        Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(keyword, pageable);
+        Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(foodNmKr, pageable);
 
         if (foods.isEmpty()) {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
@@ -52,8 +52,9 @@ public class FoodNutritionService {
     // 품목제조보고번호 검색 -> 상품명
     public List<FoodNameResponseDto> searchByItemReportNo(String itemReportNo, int page) {
         validateSearchKeyword(itemReportNo);
+
         Pageable pageable = PageRequest.of(page, 10);
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo, pageable);
+        Page<FoodNutrition> foods = foodRepository.findByItemReportNo(itemReportNo, pageable);
 
         if (foods.isEmpty()) {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
@@ -62,11 +63,12 @@ public class FoodNutritionService {
         return foods.map(FoodNameResponseDto::fromEntity).getContent();
     }
 
+
     // 품목제조보고번호 검색 -> 영양성분 상세
     public List<FoodResponseDto> getFoodDetailsByItemReportNo(String itemReportNo, int page) {
         validateSearchKeyword(itemReportNo);
         Pageable pageable = PageRequest.of(page, 10);
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo, pageable);
+        Page<FoodNutrition> foods = foodRepository.findByItemReportNo(itemReportNo, pageable);
 
         if (foods.isEmpty()) {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
