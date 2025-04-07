@@ -1,6 +1,6 @@
-package capstone.mju.backend.domain.openapi.entity.repository;
+package capstone.mju.backend.domain.nutrition.entity.repository;
 
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

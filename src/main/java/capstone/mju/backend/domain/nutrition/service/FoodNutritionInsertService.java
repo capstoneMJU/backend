@@ -1,8 +1,8 @@
-package capstone.mju.backend.domain.openapi.service;
+package capstone.mju.backend.domain.nutrition.service;
 
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
-import capstone.mju.backend.domain.openapi.config.FoodProperties;
-import capstone.mju.backend.domain.openapi.entity.repository.FoodNutritionRepository;
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
+import capstone.mju.backend.domain.nutrition.config.FoodProperties;
+import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

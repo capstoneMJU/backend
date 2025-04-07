@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.openapi.config;
+package capstone.mju.backend.domain.nutrition.config;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

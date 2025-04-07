@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.openapi.entity;
+package capstone.mju.backend.domain.nutrition.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
