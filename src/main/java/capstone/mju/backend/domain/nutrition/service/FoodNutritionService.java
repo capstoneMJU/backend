@@ -26,6 +26,7 @@ public class FoodNutritionService {
     // 상품명 검색 -> 상품명 나열
     public List<FoodNameResponseDto> searchFoodNames(String foodNmKr, int page) {
         validateSearchKeyword(foodNmKr);
+        foodNmKr = foodNmKr.trim();
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(foodNmKr, pageable);
 
@@ -39,6 +40,7 @@ public class FoodNutritionService {
     // 상품명 -> 영양성분 상세
     public List<FoodNamedetailResponse> getFoodDetailsByFoodNameKr(String foodNmKr, int page) {
         validateSearchKeyword(foodNmKr);
+        foodNmKr = foodNmKr.trim();
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByFoodNmKrContaining(foodNmKr, pageable);
 
