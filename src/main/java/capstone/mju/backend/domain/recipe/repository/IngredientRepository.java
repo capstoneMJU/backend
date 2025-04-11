@@ -1,6 +1,6 @@
-package capstone.mju.backend.domain.ingredient.repository;
+package capstone.mju.backend.domain.recipe.repository;
 
-import capstone.mju.backend.domain.ingredient.domain.Ingredient;
+import capstone.mju.backend.domain.recipe.domain.Ingredient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
