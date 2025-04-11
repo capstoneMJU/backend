@@ -5,6 +5,7 @@ spring:
       - application-openapi.yml
       - application-database.yml
       - application-ocr.yml
+      - application-security.yml
   cache:
     type: simple
   thymeleaf:
