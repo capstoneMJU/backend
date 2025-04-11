@@ -1,4 +1,9 @@
 package capstone.mju.backend.domain.recipe.repository;
 
-public interface RecipeRepository {
+import capstone.mju.backend.domain.recipe.domain.Recipe;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 }
