@@ -18,6 +18,20 @@ public class OpenAiService {
     @Value("${openai.api-key}")
     private String openAiApiKey;
     private final WebClient openAiWebClient;
+
+    @Value("${openai.model}")
+    private String openAiModel;
+
+    @Value("${openai.temperature}")
+    private double temperature;
+
+    @Value("${openai.max-tokens}")
+    private int maxTokens;
+
+
+    /*
+    promt 작성
+     */
     public RecipeResult createRecipePromptAndTitle(String ingredients) {
         String prompt = String.format(
                 "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
@@ -39,9 +53,12 @@ public class OpenAiService {
     }
 
 
+    /*
+    Chat Gpt 세팅
+     */
     private Map<String, Object> buildRequestBody(String prompt) {
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-4");
+        requestBody.put("model", openAiModel);
 
         List<Map<String, String>> messages = List.of(
                 Map.of(
@@ -50,12 +67,15 @@ public class OpenAiService {
                 )
         );
         requestBody.put("messages", messages);
-        requestBody.put("temperature", 0.7);
-        requestBody.put("max_tokens", 1500);
+        requestBody.put("temperature", temperature);
+        requestBody.put("max_tokens", maxTokens);
 
         return requestBody;
     }
 
+    /*
+    제목, 레시피 순서 파싱 메소드
+     */
     private RecipeResult parseRecipeResultFromResponse(String response) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();

@@ -26,6 +26,9 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
 
+    /*
+     레시피 생성
+     */
     public RecipeResponse createLowCalorieRecipe(RecipeDto request) {
         String ingredientsText = request.getIngredients().stream()
                 .map(Ingredient::getName)
@@ -49,6 +52,9 @@ public class RecipeService {
         return RecipeResponse.of(recipe.getId(), recipe.getTitle(), recipe.getRequiredIngredients(), recipe.getRecipeContent());
     }
 
+    /*
+    레시피 단건 조회
+     */
     public RecipeResponse getRecipeById(UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
 
@@ -60,6 +66,7 @@ public class RecipeService {
         );
     }
 
+    // 스크랩한 모든 레시피들 조회
     public RecipeListResponse getAllRecipes(User user) {
         List<Recipe> recipes = recipeRepository.findAll();
 
@@ -75,6 +82,9 @@ public class RecipeService {
         return RecipeListResponse.from(recipeResponses);
     }
 
+    /*
+    레시피 스크랩
+     */
     @Transactional
     public ScrapRecipeResponse scrapRecipe(User user, ScrapRecipeRequest request) {
         List<Ingredient> ingredients = request.getIngredients().stream()
@@ -104,11 +114,17 @@ public class RecipeService {
                 .build();
     }
 
+    /*
+    스크랩한 레시피 삭제
+     */
     public void deleteRecipe(UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
         recipeRepository.deleteById(recipeId);
     }
 
+    /*
+    사용자의 레시피에 대한 권한 validation
+     */
     private Recipe findRecipeByIdOrThrow(UUID recipeId) {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("레시피를 찾을 수 없습니다."));
