@@ -38,7 +38,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    @Operation(summary = "레시피 조회", description = "ID로 특정 레시피를 조회합니다.")
+    @Operation(summary = "단건 레시피 조회", description = "ID로 특정 레시피를 조회합니다.")
     public ResponseEntity<ResponseDto<RecipeResponse>> getRecipe(@Parameter(hidden = true) @AuthenticatedUser User user, @PathVariable UUID recipeId) {
         RecipeResponse recipeResponse = recipeService.getRecipeById(recipeId);
         return new ResponseEntity<>(
