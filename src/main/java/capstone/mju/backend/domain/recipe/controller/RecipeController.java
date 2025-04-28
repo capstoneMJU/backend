@@ -47,7 +47,7 @@ public class RecipeController {
         );
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Operation(summary = "모든 레시피 조회", description = "저장된 모든 레시피 목록을 조회합니다.")
     public ResponseEntity<ResponseDto<RecipeListResponse>> getAllRecipes(@Parameter(hidden = true) @AuthenticatedUser User user) {
         RecipeListResponse recipes = recipeService.getAllRecipes(user);
