@@ -19,7 +19,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/foods/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/boards").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/boards/**").permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )

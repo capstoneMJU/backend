@@ -1,10 +1,10 @@
 package capstone.mju.backend.domain.board.service;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
 import capstone.mju.backend.domain.common.error.ErrorCode;
-import capstone.mju.backend.domain.common.exception.ForbiddenException;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.domain.user.repository.UserInterface;
@@ -37,6 +37,7 @@ public class BoardService {
                 .build();
 
         Board savedBoard = boardRepository.save(board);
+        log.info("Saved board: {}", board.getId());
         return savedBoard.getId();
     }
     // 게시글 삭제
@@ -52,11 +53,28 @@ public class BoardService {
         log.info("게시글 삭제 완료 - boardId={}, user={}", boardId, user.getEmail());
     }
 
+    //상세 페이지 조회
+    @Transactional(readOnly = true)
+    public BoardDetailResponse getBoardDetail(UUID boardId) {
+        Board board = findBoardOrThrow(boardId);
+
+        return BoardDetailResponse.builder()
+                .title(board.getTitle())
+                .nickname(board.getUser().getUsername())
+                .content(board.getContent())
+                .postImage(board.getPost_image())
+                .build();
+    }
+
     //----------------------예외처리------------------------------
 
     private Board getBoardOwnedByUser(UUID boardId, User user) {
         return boardRepository.findByIdAndUser(boardId, user)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND,"유저가 존자하지 않습니다."));
+    }
+    private Board findBoardOrThrow(UUID boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "게시글이 존재하지 않습니다."));
     }
 
 }

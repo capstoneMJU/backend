@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findByIdAndUser(UUID boardId, User user); // 본인 게시글만 삭제 가능하도록
+    Optional<Board> findById(UUID id); //ID 조회
 
 }

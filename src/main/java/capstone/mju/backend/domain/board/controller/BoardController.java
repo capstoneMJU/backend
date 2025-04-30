@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.controller;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.service.BoardService;
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.UnauthorizedException;
@@ -68,6 +69,18 @@ public class BoardController {
 
         boardService.deleteBoard(boardId, user);
         return ResponseEntity.noContent().build();
+    }
+    @Operation(summary = "게시글 상세 조회", description = "게시글 ID를 기반으로 상세 내용을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 게시글이 존재하지 않음")
+    })
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDetailResponse> getBoardDetail(
+            @PathVariable @Parameter(description = "조회할 게시글 UUID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584") UUID boardId) {
+
+        BoardDetailResponse response = boardService.getBoardDetail(boardId);
+        return ResponseEntity.ok(response);
     }
 
 }
