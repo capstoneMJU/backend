@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +59,18 @@ public class CommentService {
         log.info("댓글 수정 완료 - commentId={}, user={}", commentId, user.getEmail());
     }
 
+    //댓글 조회
+    @Transactional(readOnly = true)
+    public List<CommentResponse> getCommentsByBoard(UUID boardId) {
+        return commentRepository.findByBoardIdOrderByCreatedAtAsc(boardId).stream()
+                .map(comment -> CommentResponse.builder()
+                        .id(comment.getId())
+                        .content(comment.getContent())
+                        .username(comment.getUser().getUsername())
+                        .createdAt(comment.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     // --------------예외처리 ------------
     private Comment findCommentByIdAndUser(UUID commentId, User user) {

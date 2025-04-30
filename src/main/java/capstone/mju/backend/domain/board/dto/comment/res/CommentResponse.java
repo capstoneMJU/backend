@@ -1,8 +1,15 @@
 package capstone.mju.backend.domain.board.dto.comment.res;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Builder
+@AllArgsConstructor
 public class CommentResponse {
     private UUID id;
     private String content;

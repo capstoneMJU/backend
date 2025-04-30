@@ -2,6 +2,7 @@ package capstone.mju.backend.domain.board.controller;
 
 import capstone.mju.backend.domain.board.dto.comment.req.CommentCreateRequest;
 import capstone.mju.backend.domain.board.dto.comment.req.CommentUpdateRequest;
+import capstone.mju.backend.domain.board.dto.comment.res.CommentResponse;
 import capstone.mju.backend.domain.board.service.CommentService;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -77,5 +79,19 @@ public class CommentController {
 
         commentService.updateComment(commentId, user, request);
         return ResponseEntity.ok().build();
+    }
+
+    //댓글 조회
+    @Operation(summary = "댓글 목록 조회", description = "게시글 ID에 해당하는 모든 댓글을 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음")
+    })
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<List<CommentResponse>> getCommentsByBoard(
+            @PathVariable UUID boardId) {
+
+        List<CommentResponse> comments = commentService.getCommentsByBoard(boardId);
+        return ResponseEntity.ok(comments);
     }
 }
