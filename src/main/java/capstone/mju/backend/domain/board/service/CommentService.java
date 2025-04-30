@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.service;
 
 import capstone.mju.backend.domain.board.dto.comment.req.CommentCreateRequest;
+import capstone.mju.backend.domain.board.dto.comment.req.CommentUpdateRequest;
 import capstone.mju.backend.domain.board.dto.comment.res.CommentResponse;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.Comment;
@@ -49,6 +50,13 @@ public class CommentService {
         commentRepository.delete(comment);
         log.info("댓글 삭제 완료 - commentId={}, user={}", commentId, user.getEmail());
     }
+    @Transactional
+    public void updateComment(UUID commentId, User user, CommentUpdateRequest request) {
+        Comment comment = findCommentByIdAndUser(commentId, user);
+
+        comment.updateContent(request.getContent());
+        log.info("댓글 수정 완료 - commentId={}, user={}", commentId, user.getEmail());
+    }
 
 
     // --------------예외처리 ------------
@@ -56,4 +64,5 @@ public class CommentService {
         return commentRepository.findByIdAndUser(commentId, user)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "댓글이 존재하지 않거나 권한이 없습니다."));
     }
+
 }

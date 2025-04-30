@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.controller;
 
 import capstone.mju.backend.domain.board.dto.comment.req.CommentCreateRequest;
+import capstone.mju.backend.domain.board.dto.comment.req.CommentUpdateRequest;
 import capstone.mju.backend.domain.board.service.CommentService;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
@@ -58,5 +59,23 @@ public class CommentController {
 
         commentService.deleteComment(commentId, user);
         return ResponseEntity.noContent().build();
+    }
+
+
+    //댓글 수정
+    @PutMapping("/{commentId}")
+    @Operation(summary = "댓글 수정", description = "본인의 댓글을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인 필요"),
+            @ApiResponse(responseCode = "404", description = "댓글이 존재하지 않음 또는 권한 없음")
+    })
+    public ResponseEntity<Void> updateComment(
+            @AuthenticatedUser @Parameter(hidden = true) User user,
+            @PathVariable UUID commentId,
+            @RequestBody @Valid CommentUpdateRequest request) {
+
+        commentService.updateComment(commentId, user, request);
+        return ResponseEntity.ok().build();
     }
 }
