@@ -13,28 +13,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
-    private final long MAX_AGE_SECS = 3600L;
-    @Value("${client.host}")
-    private List<String> clientHosts;
-    private final List<String> allowedMethods = List.of(
-            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "TRACE"
-    );
+public class CorsConfig {
+
+    private final ClientProperties clientProperties;
+
+    public CorsConfig(ClientProperties clientProperties) {
+        this.clientProperties = clientProperties;
+    }
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilterRegistrationBean() {
         CorsConfiguration config = new CorsConfiguration();
-        clientHosts.forEach(config::addAllowedOrigin);
-        allowedMethods.forEach(config::addAllowedMethod);
+        clientProperties.getHost().forEach(config::addAllowedOrigin);
         config.setAllowCredentials(true);
         config.addAllowedHeader("*");
-        config.setMaxAge(MAX_AGE_SECS);
+        config.addAllowedMethod("*");
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        FilterRegistrationBean<CorsFilter> filterBean = new FilterRegistrationBean<>(new CorsFilter(source));
-        filterBean.setOrder(0);
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(0);
 
-        return filterBean;
+        return bean;
     }
 }
