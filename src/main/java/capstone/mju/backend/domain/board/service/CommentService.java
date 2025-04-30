@@ -9,6 +9,7 @@ import capstone.mju.backend.domain.board.entity.Comment;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
 import capstone.mju.backend.domain.board.entity.repository.CommentRepository;
 import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.ForbiddenException;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -51,17 +52,14 @@ public class CommentService {
     //댓글 삭제
     @Transactional
     public void deleteComment(UUID commentId, User user) {
-        Comment comment = findCommentByIdAndUser(commentId, user);
-
+        Comment comment = getCommentOwnedByUser(commentId, user);
         commentRepository.delete(comment);
-        log.info("댓글 삭제 완료 - commentId={}, user={}", commentId, user.getEmail());
     }
+    //댓글 수정
     @Transactional
     public void updateComment(UUID commentId, User user, CommentUpdateRequest request) {
-        Comment comment = findCommentByIdAndUser(commentId, user);
-
+        Comment comment = getCommentOwnedByUser(commentId, user);
         comment.updateContent(request.getContent());
-        log.info("댓글 수정 완료 - commentId={}, user={}", commentId, user.getEmail());
     }
 
     //댓글 조회
@@ -101,5 +99,9 @@ public class CommentService {
     private Comment findParentCommentOrThrow(UUID commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "부모 댓글을 찾을 수 없습니다."));
+    }
+    private Comment getCommentOwnedByUser(UUID commentId, User user) {
+        return commentRepository.findByIdAndUser(commentId, user)
+                .orElseThrow(() -> new ForbiddenException(ErrorCode.FORBIDDEN_USER));
     }
 }
