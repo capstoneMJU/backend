@@ -3,6 +3,7 @@ package capstone.mju.backend.domain.board.controller;
 import capstone.mju.backend.domain.board.dto.comment.req.CommentCreateRequest;
 import capstone.mju.backend.domain.board.dto.comment.req.CommentUpdateRequest;
 import capstone.mju.backend.domain.board.dto.comment.res.CommentResponse;
+import capstone.mju.backend.domain.board.dto.comment.res.CommentTreeResponse;
 import capstone.mju.backend.domain.board.service.CommentService;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
@@ -93,5 +94,16 @@ public class CommentController {
 
         List<CommentResponse> comments = commentService.getCommentsByBoard(boardId);
         return ResponseEntity.ok(comments);
+    }
+
+    //댓글 + 대댓글 조회
+    @Operation(summary = "댓글 + 대댓글 계층 조회", description = "게시글의 댓글 및 대댓글을 계층 구조로 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @GetMapping("/board/{boardId}/comment")
+    public ResponseEntity<List<CommentTreeResponse>> getCommentsTree(
+            @PathVariable UUID boardId) {
+
+        List<CommentTreeResponse> tree = commentService.getCommentsByBoardWithReplies(boardId);
+        return ResponseEntity.ok(tree);
     }
 }

@@ -3,6 +3,7 @@ package capstone.mju.backend.domain.board.service;
 import capstone.mju.backend.domain.board.dto.comment.req.CommentCreateRequest;
 import capstone.mju.backend.domain.board.dto.comment.req.CommentUpdateRequest;
 import capstone.mju.backend.domain.board.dto.comment.res.CommentResponse;
+import capstone.mju.backend.domain.board.dto.comment.res.CommentTreeResponse;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.Comment;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
@@ -30,13 +31,17 @@ public class CommentService {
     //댓글 생성
     @Transactional
     public UUID createComment(UUID boardId, User user, CommentCreateRequest request) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+        Board board = findBoardOrThrow(boardId);
 
+        Comment parent = null;
+        if (request.getParentId() != null) {
+            parent = findParentCommentOrThrow(request.getParentId());
+        }
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .user(user)
                 .board(board)
+                .parent(parent)
                 .build();
 
         commentRepository.save(comment);
@@ -72,10 +77,29 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    //댓글 + 대댓글 선언
+    @Transactional(readOnly = true)
+    public List<CommentTreeResponse> getCommentsByBoardWithReplies(UUID boardId) {
+        List<Comment> comments = commentRepository.findByBoardIdOrderByCreatedAtAsc(boardId);
+
+        return comments.stream()
+                .filter(comment -> comment.getParent() == null)
+                .map(CommentTreeResponse::from)
+                .collect(Collectors.toList());
+    }
+
     // --------------예외처리 ------------
     private Comment findCommentByIdAndUser(UUID commentId, User user) {
         return commentRepository.findByIdAndUser(commentId, user)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "댓글이 존재하지 않거나 권한이 없습니다."));
     }
+    private Board findBoardOrThrow(UUID boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "게시글을 찾을 수 없습니다."));
+    }
 
+    private Comment findParentCommentOrThrow(UUID commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "부모 댓글을 찾을 수 없습니다."));
+    }
 }
