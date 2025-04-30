@@ -3,6 +3,8 @@ package capstone.mju.backend.domain.board.entity.repository;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.Like;
 import capstone.mju.backend.domain.user.domain.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,5 +17,6 @@ public interface LikeRepository extends JpaRepository<Like, UUID> {
 
     Optional<Like> findByUserAndBoard(User user, Board board);
 
-    List<Like> findAllByUser(User user);
+    Slice<Like> findAllByUser(User user, Pageable pageable);
+
 }
