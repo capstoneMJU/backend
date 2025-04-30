@@ -26,7 +26,9 @@ public class Board extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Category category_name;
+    @Column(name = "category_name")
+    private Category categoryName;
+
 
     private String post_image;
 
@@ -42,7 +44,7 @@ public class Board extends BaseEntity {
             this.content = content;
         }
         if (categoryName != null) {
-            this.category_name = categoryName;
+            this.categoryName = categoryName;
         }
         if (postImage != null) {
             this.post_image = postImage;

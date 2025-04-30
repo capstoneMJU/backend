@@ -1,7 +1,9 @@
 package capstone.mju.backend.domain.board.controller;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
+import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.service.BoardService;
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.UnauthorizedException;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -83,4 +86,18 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    //카테고리별 게시글 조회 ( 최신순 + 무한 스크롤 )
+    @Operation(summary = "카테고리별 게시글 목록 조회", description = "카테고리별로 최근 게시글을 10개씩 Slice로 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
+    })
+    @GetMapping("/scroll")
+    public ResponseEntity<Slice<BoardCategoryResponse>> getBoardsByCategory(
+            @RequestParam Category category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Slice<BoardCategoryResponse> result = boardService.getBoardsByCategory(category, page, size);
+        return ResponseEntity.ok(result);
+    }
 }

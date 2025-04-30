@@ -1,8 +1,10 @@
 package capstone.mju.backend.domain.board.service;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.entity.Board;
+import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
@@ -11,6 +13,10 @@ import capstone.mju.backend.domain.user.repository.UserInterface;
 import capstone.mju.backend.global.s3.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +37,7 @@ public class BoardService {
         Board board = Board.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .category_name(request.getCategoryName())
+                .categoryName(request.getCategoryName())
                 .post_image(imageUrl)
                 .user(user)
                 .build();
@@ -64,6 +70,18 @@ public class BoardService {
                 .content(board.getContent())
                 .postImage(board.getPost_image())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<BoardCategoryResponse> getBoardsByCategory(Category category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        return boardRepository.findByCategoryNameOrderByCreatedAtDesc(category, pageable)
+                .map(board -> BoardCategoryResponse.builder()
+                        .title(board.getTitle())
+                        .name(board.getUser().getUsername())
+                        .content(board.getContent())
+                        .build());
     }
 
     //----------------------예외처리------------------------------
