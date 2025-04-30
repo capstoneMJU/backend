@@ -25,6 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
 
+    //댓글 생성
     @Transactional
     public UUID createComment(UUID boardId, User user, CommentCreateRequest request) {
         Board board = boardRepository.findById(boardId)
@@ -38,5 +39,21 @@ public class CommentService {
 
         commentRepository.save(comment);
         return comment.getId();
+    }
+
+    //댓글 삭제
+    @Transactional
+    public void deleteComment(UUID commentId, User user) {
+        Comment comment = findCommentByIdAndUser(commentId, user);
+
+        commentRepository.delete(comment);
+        log.info("댓글 삭제 완료 - commentId={}, user={}", commentId, user.getEmail());
+    }
+
+
+    // --------------예외처리 ------------
+    private Comment findCommentByIdAndUser(UUID commentId, User user) {
+        return commentRepository.findByIdAndUser(commentId, user)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "댓글이 존재하지 않거나 권한이 없습니다."));
     }
 }

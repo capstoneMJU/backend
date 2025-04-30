@@ -25,6 +25,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    //댓글 생성
     @Operation(summary = "댓글 생성", description = "게시글에 댓글을 작성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 작성 성공"),
@@ -40,5 +41,22 @@ public class CommentController {
 
         UUID commentId = commentService.createComment(boardId, user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body("CommentID: " + commentId);
+    }
+
+
+    //댓글 삭제
+    @Operation(summary = "댓글 삭제", description = "본인의 댓글을 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "댓글 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인 필요"),
+            @ApiResponse(responseCode = "404", description = "댓글이 존재하지 않음 또는 권한 없음")
+    })
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @AuthenticatedUser @Parameter(hidden = true) User user,
+            @PathVariable UUID commentId) {
+
+        commentService.deleteComment(commentId, user);
+        return ResponseEntity.noContent().build();
     }
 }
