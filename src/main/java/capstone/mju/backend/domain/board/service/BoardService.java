@@ -1,9 +1,9 @@
 package capstone.mju.backend.domain.board.service;
 
-import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
-import capstone.mju.backend.domain.board.dto.req.BoardUpdateRequest;
-import capstone.mju.backend.domain.board.dto.res.BoardCategoryResponse;
-import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
+import capstone.mju.backend.domain.board.dto.board.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.board.req.BoardUpdateRequest;
+import capstone.mju.backend.domain.board.dto.board.res.BoardCategoryResponse;
+import capstone.mju.backend.domain.board.dto.board.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;

@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.board.dto.req;
+package capstone.mju.backend.domain.board.dto.board.req;
 
 import capstone.mju.backend.domain.board.entity.Category;
 import io.swagger.v3.oas.annotations.media.Schema;

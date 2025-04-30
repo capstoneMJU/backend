@@ -1,5 +1,4 @@
-package capstone.mju.backend.domain.board.dto.res;
-
+package capstone.mju.backend.domain.board.dto.board.res;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,8 +7,10 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class BoardCategoryResponse {
+public class BoardDetailResponse {
+
     private String title;
-    private String name;
+    private String nickname;
     private String content;
+    private String postImage;
 }
