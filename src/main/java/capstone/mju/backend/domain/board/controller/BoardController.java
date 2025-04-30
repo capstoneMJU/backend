@@ -8,7 +8,9 @@ import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
 import capstone.mju.backend.global.s3.S3ImageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,4 +49,25 @@ public class BoardController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("BoardID: "+boardId);
     }
+
+
+    //게시글 삭제
+    @Operation(
+            summary = "게시글 삭제",
+            description = "UUID를 기반으로 본인이 작성한 게시글을 삭제합니다. S3에 등록된 이미지가 있다면 함께 삭제됩니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "게시글 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글 또는 권한 없음"),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자")
+    })
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(
+            @AuthenticatedUser @Parameter(hidden = true) User user, // Swagger에 사용자 정보 노출 안 함
+            @PathVariable @Parameter(description = "삭제할 게시글의 UUID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584") UUID boardId) {
+
+        boardService.deleteBoard(boardId, user);
+        return ResponseEntity.noContent().build();
+    }
+
 }
