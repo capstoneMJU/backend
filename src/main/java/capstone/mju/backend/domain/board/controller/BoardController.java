@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.controller;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.req.BoardUpdateRequest;
 import capstone.mju.backend.domain.board.dto.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.entity.Category;
@@ -12,6 +13,7 @@ import capstone.mju.backend.global.auth.AuthenticatedUser;
 import capstone.mju.backend.global.s3.S3ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +38,12 @@ public class BoardController {
 
     // 게시글 작성
     @Operation(summary = "게시글 작성", description = "이미지 업로드 포함하여 게시글을 작성합니다.")
-    @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "게시글 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 형식", content = @Content),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
+    })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createBoard(
             @AuthenticatedUser User user,
@@ -56,14 +63,13 @@ public class BoardController {
 
 
     //게시글 삭제
-    @Operation(
-            summary = "게시글 삭제",
-            description = "UUID를 기반으로 본인이 작성한 게시글을 삭제합니다. S3에 등록된 이미지가 있다면 함께 삭제됩니다."
-    )
+    @Operation(summary = "게시글 삭제", description = "UUID를 기반으로 본인이 작성한 게시글을 삭제합니다. S3에 등록된 이미지가 있다면 함께 삭제됩니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "게시글 삭제 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글 또는 권한 없음"),
-            @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자")
+            @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자", content = @Content),
+            @ApiResponse(responseCode = "403", description = "해당 게시글에 대한 권한이 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
     })
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(
@@ -73,10 +79,36 @@ public class BoardController {
         boardService.deleteBoard(boardId, user);
         return ResponseEntity.noContent().build();
     }
+    //게시글 수정
+    @Operation(summary = "게시글 수정", description = "인증된 사용자가 본인 게시글을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 형식", content = @Content),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자", content = @Content),
+            @ApiResponse(responseCode = "403", description = "해당 게시글에 대한 권한이 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
+    })
+
+    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateBoard(
+            @AuthenticatedUser @Parameter(hidden = true) User user,
+            @PathVariable UUID boardId,
+            @RequestPart("request") @Valid BoardUpdateRequest request,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        boardService.updateBoard(boardId, user, request, image);
+        return ResponseEntity.ok().build();
+    }
+
+
+
+    // 게시글 상세 조회
     @Operation(summary = "게시글 상세 조회", description = "게시글 ID를 기반으로 상세 내용을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "해당 게시글이 존재하지 않음")
+            @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
     })
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardDetailResponse> getBoardDetail(
@@ -89,8 +121,11 @@ public class BoardController {
     //카테고리별 게시글 조회 ( 최신순 + 무한 스크롤 )
     @Operation(summary = "카테고리별 게시글 목록 조회", description = "카테고리별로 최근 게시글을 10개씩 Slice로 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "카테고리 값이 유효하지 않음", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
     })
+
     @GetMapping("/scroll")
     public ResponseEntity<Slice<BoardCategoryResponse>> getBoardsByCategory(
             @RequestParam Category category,

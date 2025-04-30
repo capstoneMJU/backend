@@ -37,15 +37,9 @@ public class Board extends BaseEntity {
     private User user;
 
     public void update(String title, String content, Category categoryName, String postImage) {
-        if (title != null) {
-            this.title = title;
-        }
-        if (content != null) {
-            this.content = content;
-        }
-        if (categoryName != null) {
-            this.categoryName = categoryName;
-        }
+        this.title = title;
+        this.content = content;
+        this.categoryName = categoryName;
         if (postImage != null) {
             this.post_image = postImage;
         }

@@ -20,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/boards").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/boards/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/boards/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )

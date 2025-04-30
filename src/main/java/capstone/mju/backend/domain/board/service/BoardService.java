@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.service;
 
 import capstone.mju.backend.domain.board.dto.req.BoardCreateRequest;
+import capstone.mju.backend.domain.board.dto.req.BoardUpdateRequest;
 import capstone.mju.backend.domain.board.dto.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.res.BoardDetailResponse;
 import capstone.mju.backend.domain.board.entity.Board;
@@ -8,6 +9,7 @@ import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
+import capstone.mju.backend.domain.common.exception.UnauthorizedException;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.domain.user.repository.UserInterface;
 import capstone.mju.backend.global.s3.S3ImageService;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -49,6 +52,7 @@ public class BoardService {
     // 게시글 삭제
     @Transactional
     public void deleteBoard(UUID boardId, User user) {
+        validateAuthenticatedUser(user);
         Board board = getBoardOwnedByUser(boardId, user);
 
         if (board.getPost_image() != null) {
@@ -56,7 +60,26 @@ public class BoardService {
         }
 
         boardRepository.delete(board);
-        log.info("게시글 삭제 완료 - boardId={}, user={}", boardId, user.getEmail());
+        log.info("게시글 삭제 완료 - boardId={}, user={}", board.getId(), user.getEmail());
+    }
+
+    //게시글 수정
+    @Transactional
+    public void updateBoard(UUID boardId, User user, BoardUpdateRequest request, MultipartFile image) {
+        validateAuthenticatedUser(user);
+        Board board = getBoardOwnedByUser(boardId, user);
+
+        // 기존 이미지 삭제
+        if (image != null && !image.isEmpty()) {
+            if (board.getPost_image() != null) {
+                s3ImageService.deleteImageFromS3(board.getPost_image());
+            }
+            String newImageUrl = s3ImageService.upload(image);
+            board.update(request.getTitle(), request.getContent(), request.getCategoryName(), newImageUrl);
+        } else {
+            board.update(request.getTitle(), request.getContent(), request.getCategoryName(), null);
+        }
+        log.info("Update board: {}", board.getId());
     }
 
     //상세 페이지 조회
@@ -72,6 +95,7 @@ public class BoardService {
                 .build();
     }
 
+    //카테고리 별 게시글 조회
     @Transactional(readOnly = true)
     public Slice<BoardCategoryResponse> getBoardsByCategory(Category category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -85,11 +109,17 @@ public class BoardService {
     }
 
     //----------------------예외처리------------------------------
+    private void validateAuthenticatedUser(User user) {
+        if (user == null) {
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_USER, "로그인이 필요합니다.");
+        }
+    }
 
     private Board getBoardOwnedByUser(UUID boardId, User user) {
         return boardRepository.findByIdAndUser(boardId, user)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND,"유저가 존자하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.FORBIDDEN_USER, "해당 게시글에 대한 권한이 없습니다."));
     }
+
     private Board findBoardOrThrow(UUID boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND, "게시글이 존재하지 않습니다."));
