@@ -1,0 +1,5 @@
+client:
+  host:
+    - https://zeropick.p-e.kr
+    - https://localhost:3000
+    - https://localhost:5174
