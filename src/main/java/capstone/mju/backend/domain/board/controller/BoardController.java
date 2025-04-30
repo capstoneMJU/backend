@@ -4,6 +4,7 @@ import capstone.mju.backend.domain.board.dto.board.req.BoardCreateRequest;
 import capstone.mju.backend.domain.board.dto.board.req.BoardUpdateRequest;
 import capstone.mju.backend.domain.board.dto.board.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.board.res.BoardDetailResponse;
+import capstone.mju.backend.domain.board.dto.board.res.BoardDetailWithCommentsResponse;
 import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.service.BoardService;
 import capstone.mju.backend.domain.common.error.ErrorCode;
@@ -125,7 +126,6 @@ public class BoardController {
             @ApiResponse(responseCode = "400", description = "카테고리 값이 유효하지 않음", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
     })
-
     @GetMapping("/scroll")
     public ResponseEntity<Slice<BoardCategoryResponse>> getBoardsByCategory(
             @RequestParam Category category,
@@ -135,4 +135,16 @@ public class BoardController {
         Slice<BoardCategoryResponse> result = boardService.getBoardsByCategory(category, page, size);
         return ResponseEntity.ok(result);
     }
+
+    //통합 조회 : 상세페이지에 있는 데이터들
+    @Operation(summary = "게시글 상세 + 댓글 조회", description = "게시글과 댓글/대댓글을 함께 반환합니다.")
+    @GetMapping("/{boardId}/full")
+    public ResponseEntity<BoardDetailWithCommentsResponse> getFullBoardDetail(
+            @AuthenticatedUser @Parameter(hidden = true) User user,
+            @PathVariable UUID boardId) {
+
+        BoardDetailWithCommentsResponse response = boardService.getBoardDetailWithComments(user, boardId);
+        return ResponseEntity.ok(response);
+    }
+
 }

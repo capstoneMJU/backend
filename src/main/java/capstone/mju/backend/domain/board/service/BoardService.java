@@ -4,9 +4,13 @@ import capstone.mju.backend.domain.board.dto.board.req.BoardCreateRequest;
 import capstone.mju.backend.domain.board.dto.board.req.BoardUpdateRequest;
 import capstone.mju.backend.domain.board.dto.board.res.BoardCategoryResponse;
 import capstone.mju.backend.domain.board.dto.board.res.BoardDetailResponse;
+import capstone.mju.backend.domain.board.dto.board.res.BoardDetailWithCommentsResponse;
+import capstone.mju.backend.domain.board.dto.comment.res.CommentTreeResponse;
 import capstone.mju.backend.domain.board.entity.Board;
 import capstone.mju.backend.domain.board.entity.Category;
 import capstone.mju.backend.domain.board.entity.repository.BoardRepository;
+import capstone.mju.backend.domain.board.entity.repository.CommentRepository;
+import capstone.mju.backend.domain.board.entity.repository.LikeRepository;
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.common.exception.UnauthorizedException;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -30,8 +35,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final UserInterface userRepository;
     private final S3ImageService s3ImageService;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final CommentService commentService;
+
 
     // 게시글 생성
     @Transactional
@@ -106,6 +114,28 @@ public class BoardService {
                         .name(board.getUser().getUsername())
                         .content(board.getContent())
                         .build());
+    }
+    //전체 항목 조회
+    @Transactional(readOnly = true)
+    public BoardDetailWithCommentsResponse getBoardDetailWithComments(User user, UUID boardId) {
+        Board board = findBoardOrThrow(boardId);
+
+        boolean liked = likeRepository.existsByBoardAndUser(board, user);
+        int likeCount = likeRepository.countByBoard(board);
+        int commentCount = commentRepository.countByBoard(board);
+        List<CommentTreeResponse> comments = commentService.getCommentsByBoardWithReplies(boardId);
+
+        return BoardDetailWithCommentsResponse.builder()
+                .boardId(board.getId())
+                .title(board.getTitle())
+                .nickname(board.getUser().getUsername())
+                .content(board.getContent())
+                .postImage(board.getPost_image())
+                .liked(liked)
+                .likeCount(likeCount)
+                .commentCount(commentCount)
+                .comments(comments)
+                .build();
     }
 
     //----------------------예외처리------------------------------
