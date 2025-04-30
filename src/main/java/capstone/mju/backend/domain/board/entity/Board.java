@@ -17,11 +17,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Board extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "board_id", nullable = false, unique = true)
-    private Long id;
-
     @NotNull
     @Size(min = 1, max = 50)
     private String title;

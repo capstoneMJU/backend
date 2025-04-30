@@ -1,6 +1,7 @@
 package capstone.mju.backend.global.auth.swagger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,6 +17,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/user/**", "/auth/join").permitAll()
                         .requestMatchers("/api/v1/news/**").permitAll()
                         .requestMatchers("/api/v1/foods/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/boards").permitAll()
+
                         .requestMatchers("/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )

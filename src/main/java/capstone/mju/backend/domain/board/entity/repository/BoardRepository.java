@@ -1,0 +1,7 @@
+package capstone.mju.backend.domain.board.entity.repository;
+
+import capstone.mju.backend.domain.board.entity.Board;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+}
