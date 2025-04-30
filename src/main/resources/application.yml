@@ -7,6 +7,7 @@ spring:
       - application-ocr.yml
       - application-security.yml
       - application-openai.yml
+      - application-client.yml
   cache:
     type: simple
   thymeleaf:
