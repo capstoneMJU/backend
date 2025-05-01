@@ -49,38 +49,46 @@ public class OpenAiService {
 
     public List<RecipeSuggestionResponse> generateRecipeSuggestions(List<String> ingredients) {
         String prompt = String.format("""
-            아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
-            각 요리는 제목(title)과 필요한 재료 리스트(ingredients)로 구성돼야 해.
-            반드시 JSON 형식으로 반환해줘:
+        아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
+        각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
+        아래 JSON 형식으로 응답해줘:
 
-            [
-              {
-                "title": "요리 이름",
-                "ingredients": ["재료1", "재료2", ...]
-              },
-              ...
-            ]
+        [
+          {
+            "title": "요리 이름",
+            "ingredients": "재료1, 재료2, 재료3"
+          },
+          ...
+        ]
 
-            사용자 재료: %s
-        """, String.join(", ", ingredients));
+        사용자 재료: %s
+    """, String.join(", ", ingredients));
 
         String response = callOpenAi(prompt);
         return parseRecipeSuggestions(response);
     }
 
-    public RecipeDetailResponse generateRecipeDetail(String title) {
+
+    public List<RecipeSuggestionResponse> generateRecipeSuggestions(String ingredients) {
         String prompt = String.format("""
-            "%s"라는 요리의 전체 재료 목록과 조리 순서를 다음 JSON 형식으로 응답해줘.
-            {
-              "title": "요리 제목",
-              "ingredients": ["재료1", "재료2", ...],
-              "steps": ["1단계 설명", "2단계 설명", ...]
-            }
-        """, title);
+        아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
+        각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
+        아래 JSON 형식으로 응답해줘:
+
+        [
+          {
+            "title": "요리 이름",
+            "ingredients": "재료1, 재료2, 재료3"
+          }
+        ]
+
+        사용자 재료: %s
+    """, ingredients);
 
         String response = callOpenAi(prompt);
-        return parseRecipeDetail(response);
+        return parseRecipeSuggestions(response);
     }
+
 
     private String callOpenAi(String prompt) {
         return openAiWebClient.post()
