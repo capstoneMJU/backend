@@ -13,13 +13,13 @@ public class AuthenticationExtractor {
     private static final String TOKEN_COOKIE_NAME = "AccessToken";
 
     public static String extractTokenFromRequest(final HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        log.info("[Auth] Authorization 헤더: {}", authHeader);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            log.info("[Auth] Authorization 헤더에서 토큰 추출 성공");
-            return token;
-        }
+//        String authHeader = request.getHeader("Authorization");
+//        log.info("[Auth] Authorization 헤더: {}", authHeader);
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String token = authHeader.substring(7);
+//            log.info("[Auth] Authorization 헤더에서 토큰 추출 성공");
+//            return token;
+//        }
 
         if (request.getCookies() == null) {
             log.warn("[Auth] 쿠키 없음");
