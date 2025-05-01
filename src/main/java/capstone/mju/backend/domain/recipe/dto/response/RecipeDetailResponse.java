@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @Schema(description = "레시피 상세 응답")
-public class RecipeResponse {
+public class RecipeDetailResponse {
     @Schema(description = "레시피 ID", example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
@@ -24,7 +24,7 @@ public class RecipeResponse {
     @Schema(description = "레시피 조리 방법", example = "1. 감자와 토마토를 썰어주세요.\n2. 냄비에 넣고 끓이세요.")
     private String steps;
 
-    public static RecipeResponse of(UUID id, String title, List<Ingredient> ingredients, String steps) {
-        return new RecipeResponse(id, title, ingredients, steps);
+    public static RecipeDetailResponse of(UUID id, String title, List<Ingredient> ingredients, String steps) {
+        return new RecipeDetailResponse(id, title, ingredients, steps);
     }
 }
