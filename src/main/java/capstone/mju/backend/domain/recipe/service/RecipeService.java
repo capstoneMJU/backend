@@ -27,7 +27,7 @@ public class RecipeService {
     /*
      레시피 생성
      */
-    public RecipeResponse createLowCalorieRecipe(RecipeDto request) {
+    public RecipeDetailResponse createLowCalorieRecipe(RecipeDto request) {
         String ingredientsText = request.getIngredients().stream()
                 .map(Ingredient::getName)
                 .collect(Collectors.joining(", "));
@@ -47,16 +47,16 @@ public class RecipeService {
                 .recipeContent(recipeResult.getSteps())
                 .build();
 
-        return RecipeResponse.of(recipe.getId(), recipe.getTitle(), recipe.getRequiredIngredients(), recipe.getRecipeContent());
+        return RecipeDetailResponse.of(recipe.getId(), recipe.getTitle(), recipe.getRequiredIngredients(), recipe.getRecipeContent());
     }
 
     /*
     레시피 단건 조회
      */
-    public RecipeResponse getRecipeById(UUID recipeId) {
+    public RecipeDetailResponse getRecipeById(UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
 
-        return RecipeResponse.of(
+        return RecipeDetailResponse.of(
                 recipe.getId(),
                 recipe.getTitle(),
                 recipe.getRequiredIngredients(),
@@ -68,8 +68,8 @@ public class RecipeService {
     public RecipeListResponse getAllRecipes(User user) {
         List<Recipe> recipes = recipeRepository.findAll();
 
-        List<RecipeResponse> recipeResponses = recipes.stream()
-                .map(recipe -> RecipeResponse.of(
+        List<RecipeDetailResponse> recipeResponses = recipes.stream()
+                .map(recipe -> RecipeDetailResponse.of(
                         recipe.getId(),
                         recipe.getTitle(),
                         recipe.getRequiredIngredients(),
