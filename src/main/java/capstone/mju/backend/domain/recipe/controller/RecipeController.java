@@ -4,7 +4,7 @@ import capstone.mju.backend.domain.common.ResponseDto;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeDto;
 import capstone.mju.backend.domain.recipe.dto.request.ScrapRecipeRequest;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeListResponse;
-import capstone.mju.backend.domain.recipe.dto.response.RecipeResponse;
+import capstone.mju.backend.domain.recipe.dto.response.RecipeDetailResponse;
 import capstone.mju.backend.domain.recipe.dto.response.ScrapRecipeResponse;
 import capstone.mju.backend.domain.recipe.service.RecipeService;
 import capstone.mju.backend.domain.user.domain.User;
@@ -29,8 +29,8 @@ public class RecipeController {
 
     @PostMapping
     @Operation(summary = "레시피 생성", description = "새로운 저칼로리 레시피를 생성합니다.")
-    public ResponseEntity<ResponseDto<RecipeResponse>> createRecipe(@Parameter(hidden = true)@AuthenticatedUser User user, @RequestBody RecipeDto request) {
-        RecipeResponse recipeResponse = recipeService.createLowCalorieRecipe(request);
+    public ResponseEntity<ResponseDto<RecipeDetailResponse>> createRecipe(@Parameter(hidden = true)@AuthenticatedUser User user, @RequestBody RecipeDto request) {
+        RecipeDetailResponse recipeResponse = recipeService.createLowCalorieRecipe(request);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 생성 성공", recipeResponse),
                 HttpStatus.OK
@@ -39,8 +39,8 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}")
     @Operation(summary = "단건 레시피 조회", description = "ID로 특정 레시피를 조회합니다.")
-    public ResponseEntity<ResponseDto<RecipeResponse>> getRecipe(@Parameter(hidden = true) @AuthenticatedUser User user, @PathVariable UUID recipeId) {
-        RecipeResponse recipeResponse = recipeService.getRecipeById(recipeId);
+    public ResponseEntity<ResponseDto<RecipeDetailResponse>> getRecipe(@Parameter(hidden = true) @AuthenticatedUser User user, @PathVariable UUID recipeId) {
+        RecipeDetailResponse recipeResponse = recipeService.getRecipeById(recipeId);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 조회 성공", recipeResponse),
                 HttpStatus.OK
