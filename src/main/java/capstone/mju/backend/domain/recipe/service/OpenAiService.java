@@ -1,5 +1,6 @@
 package capstone.mju.backend.domain.recipe.service;
 
+import capstone.mju.backend.domain.recipe.domain.Ingredient;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeDetailResponse;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeResult;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeSuggestionResponse;
@@ -11,9 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class OpenAiService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RecipeResult createRecipePromptAndTitle(String ingredients) {
+    public RecipeDetailResponse createRecipePromptAndTitle(String title, String ingredients) {
         String prompt = String.format(
                 "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
                         "요리 제목(title)을 먼저 한 줄로 써주고, " +
@@ -46,28 +46,6 @@ public class OpenAiService {
         String response = callOpenAi(prompt);
         return parseRecipeResultFromResponse(response);
     }
-
-    public List<RecipeSuggestionResponse> generateRecipeSuggestions(List<String> ingredients) {
-        String prompt = String.format("""
-        아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
-        각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
-        아래 JSON 형식으로 응답해줘:
-
-        [
-          {
-            "title": "요리 이름",
-            "ingredients": "재료1, 재료2, 재료3"
-          },
-          ...
-        ]
-
-        사용자 재료: %s
-    """, String.join(", ", ingredients));
-
-        String response = callOpenAi(prompt);
-        return parseRecipeSuggestions(response);
-    }
-
 
     public List<RecipeSuggestionResponse> generateRecipeSuggestions(String ingredients) {
         String prompt = String.format("""
@@ -114,20 +92,33 @@ public class OpenAiService {
         return requestBody;
     }
 
-    private RecipeResult parseRecipeResultFromResponse(String response) {
+    private RecipeDetailResponse parseRecipeResultFromResponse(String response) {
         try {
             JsonNode root = objectMapper.readTree(response);
             String content = root.path("choices").get(0).path("message").path("content").asText();
 
+            // 레시피 제목과 조리 방법을 구분
             String[] lines = content.split("\n", 2);
             String titleLine = lines[0];
             String steps = lines.length > 1 ? lines[1].trim() : "";
             String title = titleLine.replace("title:", "").trim();
 
-            return new RecipeResult(title, steps);
+            String ingredientsLine = "";
+            List<Ingredient> ingredients = parseIngredients(ingredientsLine);
+
+            UUID recipeId = UUID.randomUUID(); // 예시로 UUID 생성
+
+            return RecipeDetailResponse.of(recipeId, title, ingredients, steps);
         } catch (Exception e) {
             throw new RuntimeException("OpenAI 응답 파싱 실패", e);
         }
+    }
+
+    private List<Ingredient> parseIngredients(String ingredientsLine) {
+        String[] ingredientsArray = ingredientsLine.split(",");
+        return Arrays.stream(ingredientsArray)
+                .map(ingredient -> new Ingredient(ingredient.trim())) // Ingredient 객체로 변환
+                .collect(Collectors.toList());
     }
 
     private List<RecipeSuggestionResponse> parseRecipeSuggestions(String response) {
@@ -137,22 +128,16 @@ public class OpenAiService {
                     .path("message")
                     .path("content").asText();
 
+            if (content.isEmpty()) {
+                throw new RuntimeException("응답 내용이 비어 있습니다.");
+            }
+
+            System.out.println("Parsed content: " + content); // Add logging
+
             return objectMapper.readValue(content, new TypeReference<List<RecipeSuggestionResponse>>() {});
         } catch (Exception e) {
-            throw new RuntimeException("레시피 추천 응답 파싱 실패", e);
-        }
-    }
-
-    private RecipeDetailResponse parseRecipeDetail(String response) {
-        try {
-            String content = objectMapper.readTree(response)
-                    .path("choices").get(0)
-                    .path("message")
-                    .path("content").asText();
-
-            return objectMapper.readValue(content, RecipeDetailResponse.class);
-        } catch (Exception e) {
-            throw new RuntimeException("레시피 상세 응답 파싱 실패", e);
+            e.printStackTrace();
+            throw new RuntimeException("레시피 추천 응답 파싱 실패. 응답 내용: " + response, e);
         }
     }
 }

@@ -24,82 +24,80 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
 
+//    /*
+//     레시피 생성
+//     */
+//    public RecipeDetailResponse createLowCalorieRecipe(RecipeDto request) {
+//        String ingredientsText = request.getIngredients().toString();
+//
+//        // OpenAI 호출
+//        RecipeResult recipeResult = openAiService.createRecipePromptAndTitle(ingredientsText);
+//
+//        // DB 저장용 Ingredient 파싱 및 저장
+//        List<Ingredient> ingredients = List.of(ingredientsText.split(",")).stream()
+//                .map(String::trim)
+//                .map(name -> Ingredient.builder().name(name).build())
+//                .map(ingredientRepository::save)
+//                .collect(Collectors.toList());
+//
+//        // Recipe 저장
+//        Recipe recipe = Recipe.builder()
+//                .title(recipeResult.getTitle())
+//                .requiredIngredients(ingredients)
+//                .recipeContent(recipeResult.getSteps())
+//                .build();
+//        recipeRepository.save(recipe);
+//
+//        return RecipeDetailResponse.of(
+//                recipe.getId(),
+//                recipe.getTitle(),
+//                ingredients,
+//                recipe.getRecipeContent()
+//        );
+//    }
+
     /*
-     레시피 생성
+    추천 레시피 목록 응답
      */
-    public RecipeDetailResponse createLowCalorieRecipe(RecipeDto request) {
-        String ingredientsText = request.getIngredients().stream()
-                .map(Ingredient::getName)
-                .collect(Collectors.joining(", "));
-
-        RecipeResult recipeResult = openAiService.createRecipePromptAndTitle(ingredientsText);
-
-        List<Ingredient> ingredients = request.getIngredients().stream()
-                .map(ingredient -> Ingredient.builder()
-                        .name(ingredient.getName())
-                        .build()
-                )
-                .collect(Collectors.toList());
-
-        Recipe recipe = Recipe.builder()
-                .title(recipeResult.getTitle())
-                .requiredIngredients(ingredients)
-                .recipeContent(recipeResult.getSteps())
+    public RecipeSuggestionListResponse suggestRecipes(RecipeSuggestionRequest request) {
+        List<RecipeSuggestionResponse> suggestions = openAiService.generateRecipeSuggestions(request.getIngredients());
+        return RecipeSuggestionListResponse.builder()
+                .suggestions(suggestions)
                 .build();
-
-        return RecipeDetailResponse.of(recipe.getId(), recipe.getTitle(), recipe.getRequiredIngredients(), recipe.getRecipeContent());
     }
 
     /*
-    레시피 단건 조회
+    추천된 레시피 제목으로 상세 내용 가져오기
      */
-    public RecipeDetailResponse getRecipeById(UUID recipeId) {
-        Recipe recipe = findRecipeByIdOrThrow(recipeId);
-
-        return RecipeDetailResponse.of(
-                recipe.getId(),
-                recipe.getTitle(),
-                recipe.getRequiredIngredients(),
-                recipe.getRecipeContent()
-        );
-    }
-
-    // 스크랩한 모든 레시피들 조회
-    public RecipeListResponse getAllRecipes(User user) {
-        List<Recipe> recipes = recipeRepository.findAll();
-
-        List<RecipeDetailResponse> recipeResponses = recipes.stream()
-                .map(recipe -> RecipeDetailResponse.of(
-                        recipe.getId(),
-                        recipe.getTitle(),
-                        recipe.getRequiredIngredients(),
-                        recipe.getRecipeContent()
-                ))
-                .collect(Collectors.toList());
-
-        return RecipeListResponse.from(recipeResponses);
+    public RecipeDetailResponse getRecipeDetail(String title, String ingredients) {
+        RecipeDetailResponse recipeDetailResponse = openAiService.createRecipePromptAndTitle(title, ingredients);
+        return recipeDetailResponse;
     }
 
     /*
-    레시피 스크랩
-     */
+   레시피 스크랩
+    */
     @Transactional
     public ScrapRecipeResponse scrapRecipe(User user, ScrapRecipeRequest request) {
+        // ingredients를 List<IngredientRequest>로 처리
         List<Ingredient> ingredients = request.getIngredients().stream()
-                .map(ingredientReq -> Ingredient.builder()
-                        .name(ingredientReq.getName())
+                .map(ingredientRequest -> Ingredient.builder()
+                        .name(ingredientRequest.getName())
                         .build())
                 .map(ingredientRepository::save)
                 .collect(Collectors.toList());
 
+        // Recipe 객체 생성
         Recipe recipe = Recipe.builder()
                 .title(request.getTitle())
                 .requiredIngredients(ingredients)
                 .recipeContent(request.getSteps())
                 .build();
 
+        // 레시피 저장
         recipeRepository.save(recipe);
 
+        // 반환
         return ScrapRecipeResponse.builder()
                 .recipeId(recipe.getId())
                 .title(recipe.getTitle())
@@ -113,26 +111,53 @@ public class RecipeService {
     }
 
     /*
-    스크랩한 레시피 삭제
+    레시피 단건 조회
      */
-    public void deleteRecipe(UUID recipeId) {
+    public RecipeDetailResponse getRecipeById(UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
-        recipeRepository.deleteById(recipeId);
+        List<Ingredient> ingredients = recipe.getRequiredIngredients();
+
+        return RecipeDetailResponse.of(
+                recipe.getId(),
+                recipe.getTitle(),
+                ingredients,
+                recipe.getRecipeContent()
+        );
     }
 
     /*
-    사용자의 레시피에 대한 권한 validation
+    저장된 모든 레시피 조회
      */
+    public RecipeListResponse getAllRecipes(User user) {
+        List<Recipe> recipes = recipeRepository.findAll();
+
+        List<RecipeDetailResponse> recipeResponses = recipes.stream()
+                .map(recipe -> {
+                    String ingredients = recipe.getRequiredIngredients().stream()
+                            .map(Ingredient::getName)
+                            .collect(Collectors.joining(", "));
+                    return RecipeDetailResponse.of(
+                            recipe.getId(),
+                            recipe.getTitle(),
+                            recipe.getRequiredIngredients(),
+                            recipe.getRecipeContent()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return RecipeListResponse.from(recipeResponses);
+    }
+
+    /*
+    레시피 삭제
+     */
+    public void deleteRecipe(UUID recipeId) {
+        Recipe recipe = findRecipeByIdOrThrow(recipeId);
+        recipeRepository.delete(recipe);
+    }
+
     private Recipe findRecipeByIdOrThrow(UUID recipeId) {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("레시피를 찾을 수 없습니다."));
     }
-
-    public RecipeSuggestionListResponse suggestRecipes(RecipeSuggestionRequest request) {
-        List<RecipeSuggestionResponse> suggestions = openAiService.generateRecipeSuggestions(request.getIngredients());
-        return RecipeSuggestionListResponse.builder()
-                .suggestions(suggestions)
-                .build();
-    }
-
 }

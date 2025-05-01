@@ -21,4 +21,8 @@ public class Ingredient extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Recipe recipe;
+
+    public Ingredient(String name) {
+        this.name = name;
+    }
 }
