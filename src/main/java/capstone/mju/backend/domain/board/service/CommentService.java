@@ -46,6 +46,8 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
+        board.increaseCommentCount(); // 댓글 수 증가
+
         return comment.getId();
     }
 
@@ -54,7 +56,9 @@ public class CommentService {
     public void deleteComment(UUID commentId, User user) {
         Comment comment = getCommentOwnedByUser(commentId, user);
         commentRepository.delete(comment);
+        comment.getBoard().decreaseCommentCount(); // 댓글 수 감소
     }
+
     //댓글 수정
     @Transactional
     public void updateComment(UUID commentId, User user, CommentUpdateRequest request) {

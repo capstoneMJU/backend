@@ -30,6 +30,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final BoardRepository boardRepository;
 
+    //좋아요
     @Transactional
     public void likeBoard(UUID boardId, User user) {
         Board board = findBoardOrThrow(boardId);
@@ -42,8 +43,10 @@ public class LikeService {
                 .build();
 
         likeRepository.save(like);
+        board.increaseLikeCount(); // 좋아요 수 증가
         log.info("게시글 좋아요 등록 - boardId={}, user={}", boardId, user.getEmail());
     }
+
     // 좋아요 삭제
     @Transactional
     public void unlikeBoard(UUID boardId, User user) {
@@ -51,6 +54,7 @@ public class LikeService {
         Like like = findLikeOrThrow(user, board);
 
         likeRepository.delete(like);
+        board.decreaseLikeCount(); // 좋아요 수 감소
         log.info("좋아요 삭제 - user={}, board={}", user.getId(), board.getId());
     }
 

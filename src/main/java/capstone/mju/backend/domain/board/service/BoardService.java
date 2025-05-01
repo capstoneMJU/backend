@@ -121,8 +121,8 @@ public class BoardService {
         Board board = findBoardOrThrow(boardId);
 
         boolean liked = likeRepository.existsByBoardAndUser(board, user);
-        int likeCount = likeRepository.countByBoard(board);
-        int commentCount = commentRepository.countByBoard(board);
+        int likeCount = board.getLikeCount();
+        int commentCount = board.getCommentCount();
         List<CommentTreeResponse> comments = commentService.getCommentsByBoardWithReplies(boardId);
 
         return BoardDetailWithCommentsResponse.builder()

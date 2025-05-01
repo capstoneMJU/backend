@@ -42,6 +42,31 @@ public class Board extends BaseEntity {
     @Schema(description = "작성자 정보 (User)", implementation = User.class)
     private User user;
 
+
+    @Column(nullable = false)
+    private int likeCount = 0;
+
+    @Column(nullable = false)
+    private int commentCount = 0;
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount = Math.max(0, this.commentCount - 1);
+    }
+
+
+
     public void update(String title, String content, Category categoryName, String postImage) {
         this.title = title;
         this.content = content;
