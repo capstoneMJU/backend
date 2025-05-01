@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OpenAiService {
     @Value("${openai.api-key}")
@@ -39,8 +41,9 @@ public class OpenAiService {
                 "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
                         "요리 제목(title)을 먼저 한 줄로 써주고, " +
                         "그 다음에 요리 순서(steps)를 번호를 매겨 (1. 2. 3.) 단계별로 구체적으로 작성해줘. " +
-                        "불필요한 설명 없이 'title:', 'steps:' 형식으로 깔끔하게 구분해서 작성해줘.",
-                ingredients
+                        "불필요한 설명 없이 'title:','ingredients: ', 'steps:' 형식으로 깔끔하게 구분해서 작성해줘. " +
+                        "레시피 제목은: '%s'",
+                ingredients, title
         );
 
         String response = callOpenAi(prompt);
@@ -97,16 +100,16 @@ public class OpenAiService {
             JsonNode root = objectMapper.readTree(response);
             String content = root.path("choices").get(0).path("message").path("content").asText();
 
-            // 레시피 제목과 조리 방법을 구분
-            String[] lines = content.split("\n", 2);
-            String titleLine = lines[0];
-            String steps = lines.length > 1 ? lines[1].trim() : "";
+            String[] parts = content.split("steps:", 2);
+            String titleLine = parts[0].trim();
             String title = titleLine.replace("title:", "").trim();
+            String steps = parts[1].trim();
 
-            String ingredientsLine = "";
+            String ingredientsLine = extractIngredientsFromContent(content);
             List<Ingredient> ingredients = parseIngredients(ingredientsLine);
 
-            UUID recipeId = UUID.randomUUID(); // 예시로 UUID 생성
+            log.info("Ingredients: {}", ingredients);
+            UUID recipeId = UUID.randomUUID();
 
             return RecipeDetailResponse.of(recipeId, title, ingredients, steps);
         } catch (Exception e) {
@@ -114,10 +117,20 @@ public class OpenAiService {
         }
     }
 
+    private String extractIngredientsFromContent(String content) {
+        String[] lines = content.split("\n");
+        for (String line : lines) {
+            if (line.toLowerCase().startsWith("ingredients:")) {
+                return line.replace("ingredients:", "").trim();
+            }
+        }
+        return "";
+    }
+
     private List<Ingredient> parseIngredients(String ingredientsLine) {
         String[] ingredientsArray = ingredientsLine.split(",");
         return Arrays.stream(ingredientsArray)
-                .map(ingredient -> new Ingredient(ingredient.trim())) // Ingredient 객체로 변환
+                .map(ingredient -> new Ingredient(ingredient.trim()))
                 .collect(Collectors.toList());
     }
 
@@ -132,7 +145,7 @@ public class OpenAiService {
                 throw new RuntimeException("응답 내용이 비어 있습니다.");
             }
 
-            System.out.println("Parsed content: " + content); // Add logging
+            System.out.println("Parsed content: " + content);
 
             return objectMapper.readValue(content, new TypeReference<List<RecipeSuggestionResponse>>() {});
         } catch (Exception e) {

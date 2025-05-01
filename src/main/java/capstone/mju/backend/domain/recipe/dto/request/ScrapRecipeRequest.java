@@ -11,15 +11,18 @@ import java.util.List;
 @Schema(description = "레시피 생성 요청 DTO")
 public class ScrapRecipeRequest {
     @NotBlank
-    @Schema(description = "스크랩할 레시피 제목", example = "맛있는 안창살 스테이크")
+    @Schema(description = "스크랩할 레시피 제목", example = "\"title\": \"스파니쉬 오믈렛\"")
     private String title;
 
     @NotEmpty
-    @Schema(description = "필요한 재료 리스트")
+    @Schema(description = "필요한 재료 리스트", example = "\"ingredients\": [\n" +
+            "        {\n" +
+            "            \"name\": \"감자\"\n" +
+            "        },")
     private List<IngredientRequest> ingredients;
 
     @NotBlank
-    @Schema(description = "레시피 단계 및 설명", example = "1. 고기를 굽는다\n2. 감자와 토마토를 굽는다")
+    @Schema(description = "레시피 단계 및 설명", example = "\"steps\": \"1. 감자와 토마토를 깨끗이 씻은 후, 감자는 작은 큐브 모양으로, 토마토는 웨지 모양으로 잘라줍니다.\\n2. 팬에 약간의 올리브 오일을 두르고, 감자")
     private String steps;
 
     @Getter

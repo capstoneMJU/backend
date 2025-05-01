@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.recipe.domain;
 
 import capstone.mju.backend.domain.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties({"id", "createdAt", "recipe"})
 @Entity(name = "ingredient")
 public class Ingredient extends BaseEntity {
     @Column(length = 100, nullable = false)

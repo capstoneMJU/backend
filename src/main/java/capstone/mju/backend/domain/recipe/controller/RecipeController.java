@@ -1,7 +1,6 @@
 package capstone.mju.backend.domain.recipe.controller;
 
 import capstone.mju.backend.domain.common.ResponseDto;
-import capstone.mju.backend.domain.recipe.dto.request.RecipeDto;
 import capstone.mju.backend.domain.recipe.dto.request.ScrapRecipeRequest;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeSuggestionRequest;
 import capstone.mju.backend.domain.recipe.dto.response.*;
@@ -71,7 +70,7 @@ public class RecipeController {
             @Parameter(hidden = true) @AuthenticatedUser User user,
             @PathVariable UUID recipeId
     ) {
-        RecipeDetailResponse recipeResponse = recipeService.getRecipeById(recipeId);
+        RecipeDetailResponse recipeResponse = recipeService.getRecipeById(recipeId, user);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 조회 성공", recipeResponse),
                 HttpStatus.OK

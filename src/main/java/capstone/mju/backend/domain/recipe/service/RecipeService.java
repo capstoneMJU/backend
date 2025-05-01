@@ -1,13 +1,14 @@
 package capstone.mju.backend.domain.recipe.service;
 
 import capstone.mju.backend.domain.recipe.domain.Ingredient;
+import capstone.mju.backend.domain.recipe.domain.ScrapRecipe;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeSuggestionRequest;
 import capstone.mju.backend.domain.recipe.dto.request.ScrapRecipeRequest;
 import capstone.mju.backend.domain.recipe.dto.response.*;
 import capstone.mju.backend.domain.recipe.repository.IngredientRepository;
 import capstone.mju.backend.domain.recipe.domain.Recipe;
-import capstone.mju.backend.domain.recipe.dto.request.RecipeDto;
 import capstone.mju.backend.domain.recipe.repository.RecipeRepository;
+import capstone.mju.backend.domain.recipe.repository.ScrapRecipeRepository;
 import capstone.mju.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,38 +24,7 @@ public class RecipeService {
     private final OpenAiService openAiService;
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
-
-//    /*
-//     레시피 생성
-//     */
-//    public RecipeDetailResponse createLowCalorieRecipe(RecipeDto request) {
-//        String ingredientsText = request.getIngredients().toString();
-//
-//        // OpenAI 호출
-//        RecipeResult recipeResult = openAiService.createRecipePromptAndTitle(ingredientsText);
-//
-//        // DB 저장용 Ingredient 파싱 및 저장
-//        List<Ingredient> ingredients = List.of(ingredientsText.split(",")).stream()
-//                .map(String::trim)
-//                .map(name -> Ingredient.builder().name(name).build())
-//                .map(ingredientRepository::save)
-//                .collect(Collectors.toList());
-//
-//        // Recipe 저장
-//        Recipe recipe = Recipe.builder()
-//                .title(recipeResult.getTitle())
-//                .requiredIngredients(ingredients)
-//                .recipeContent(recipeResult.getSteps())
-//                .build();
-//        recipeRepository.save(recipe);
-//
-//        return RecipeDetailResponse.of(
-//                recipe.getId(),
-//                recipe.getTitle(),
-//                ingredients,
-//                recipe.getRecipeContent()
-//        );
-//    }
+    private final ScrapRecipeRepository scrapRecipeRepository;
 
     /*
     추천 레시피 목록 응답
@@ -74,17 +44,21 @@ public class RecipeService {
         return recipeDetailResponse;
     }
 
-    /*
-   레시피 스크랩
-    */
     @Transactional
     public ScrapRecipeResponse scrapRecipe(User user, ScrapRecipeRequest request) {
-        // ingredients를 List<IngredientRequest>로 처리
         List<Ingredient> ingredients = request.getIngredients().stream()
-                .map(ingredientRequest -> Ingredient.builder()
-                        .name(ingredientRequest.getName())
-                        .build())
-                .map(ingredientRepository::save)
+                .map(ingredientRequest -> {
+                    Ingredient existingIngredient = ingredientRepository.findByName(ingredientRequest.getName());
+
+                    if (existingIngredient != null) {
+                        return existingIngredient;
+                    } else {
+                        Ingredient newIngredient = Ingredient.builder()
+                                .name(ingredientRequest.getName())
+                                .build();
+                        return ingredientRepository.save(newIngredient);
+                    }
+                })
                 .collect(Collectors.toList());
 
         // Recipe 객체 생성
@@ -96,6 +70,14 @@ public class RecipeService {
 
         // 레시피 저장
         recipeRepository.save(recipe);
+
+        // ScrapRecipe 엔티티에 유저와 레시피 연결
+        ScrapRecipe scrapRecipe = ScrapRecipe.builder()
+                .user(user)
+                .recipe(recipe)
+                .build();
+
+        scrapRecipeRepository.save(scrapRecipe);
 
         // 반환
         return ScrapRecipeResponse.builder()
@@ -110,11 +92,16 @@ public class RecipeService {
                 .build();
     }
 
-    /*
-    레시피 단건 조회
-     */
-    public RecipeDetailResponse getRecipeById(UUID recipeId) {
+
+    public RecipeDetailResponse getRecipeById(UUID recipeId, User user) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
+
+        // 유저가 이 레시피를 스크랩했는지 확인
+        boolean isScrapByUser = scrapRecipeRepository.existsByUserAndRecipe(user, recipe);
+
+        if (!isScrapByUser) {
+            throw new RuntimeException("이 레시피는 유저가 스크랩한 레시피가 아닙니다.");
+        }
         List<Ingredient> ingredients = recipe.getRequiredIngredients();
 
         return RecipeDetailResponse.of(
@@ -125,17 +112,17 @@ public class RecipeService {
         );
     }
 
+
     /*
     저장된 모든 레시피 조회
      */
     public RecipeListResponse getAllRecipes(User user) {
-        List<Recipe> recipes = recipeRepository.findAll();
+        // 유저가 스크랩한 레시피들만 조회
+        List<ScrapRecipe> scrapRecipes = scrapRecipeRepository.findByUser(user);
 
-        List<RecipeDetailResponse> recipeResponses = recipes.stream()
-                .map(recipe -> {
-                    String ingredients = recipe.getRequiredIngredients().stream()
-                            .map(Ingredient::getName)
-                            .collect(Collectors.joining(", "));
+        List<RecipeDetailResponse> recipeResponses = scrapRecipes.stream()
+                .map(scrapRecipe -> {
+                    Recipe recipe = scrapRecipe.getRecipe();
                     return RecipeDetailResponse.of(
                             recipe.getId(),
                             recipe.getTitle(),
@@ -148,6 +135,7 @@ public class RecipeService {
         return RecipeListResponse.from(recipeResponses);
     }
 
+
     /*
     레시피 삭제
      */
@@ -156,6 +144,9 @@ public class RecipeService {
         recipeRepository.delete(recipe);
     }
 
+    /*
+    Recipe DB 조회
+     */
     private Recipe findRecipeByIdOrThrow(UUID recipeId) {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("레시피를 찾을 수 없습니다."));
