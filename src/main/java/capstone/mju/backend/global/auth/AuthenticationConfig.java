@@ -26,10 +26,10 @@ public class AuthenticationConfig implements WebMvcConfigurer {
                         "/public/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/swagger-resources/**"
+                        "/swagger-resources/**",
+                        "/api/v1/news/**"
                 );
     }
-
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> argumentResolvers) {
