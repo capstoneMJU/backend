@@ -13,42 +13,31 @@ public class AuthenticationExtractor {
     private static final String TOKEN_COOKIE_NAME = "AccessToken";
 
     public static String extractTokenFromRequest(final HttpServletRequest request) {
-//        String authHeader = request.getHeader("Authorization");
-//        log.info("[Auth] Authorization 헤더: {}", authHeader);
-//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//            String token = authHeader.substring(7);
-//            log.info("[Auth] Authorization 헤더에서 토큰 추출 성공");
-//            return token;
-//        }
+        log.info("토큰 추출 시도: 요청에서 쿠키 확인");
 
         if (request.getCookies() == null) {
-            log.warn("[Auth] 쿠키 없음");
+            log.info("요청에 쿠키가 존재하지 않습니다.");
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "쿠키가 존재하지 않습니다.");
         }
 
         return Arrays.stream(request.getCookies())
+                .peek(cookie -> log.info("쿠키 확인 - 이름: {}, 값: {}", cookie.getName(), cookie.getValue()))
                 .filter(cookie -> TOKEN_COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .filter(value -> value != null && !value.isEmpty())
+                .findFirst()
                 .map(token -> {
                     try {
-                        // Bearer+ 접두사 제거
-                        if (token.startsWith("Bearer+")) {
-                            token = token.substring(7);
-                        } else if (token.startsWith("Bearer ")) {
-                            token = token.substring(7);
-                        }
+                        log.info("AccessToken 쿠키 발견. 토큰 디코딩 시도: {}", token);
                         return JwtEncoder.decodeJwtBearerToken(token);
                     } catch (Exception e) {
-                        log.error("[Auth] 토큰 디코딩 실패: {}", e.getMessage(), e);
+                        log.info("토큰 디코딩 실패: {}", e.getMessage());
                         throw new UnauthorizedException(ErrorCode.INVALID_TOKEN, "토큰 디코딩에 실패했습니다.");
                     }
                 })
-                .findFirst()
                 .orElseThrow(() -> {
-                    log.error("[Auth] AccessToken 쿠키 없음 또는 값 비어 있음");
+                    log.info("AccessToken 쿠키가 없거나 값이 비어 있습니다.");
                     return new UnauthorizedException(ErrorCode.INVALID_TOKEN, "로그인 여부를 확인해주세요.");
                 });
     }
 }
-
