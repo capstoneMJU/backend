@@ -1,6 +1,9 @@
 package capstone.mju.backend.domain.recipe.service;
 
+import capstone.mju.backend.domain.recipe.dto.response.RecipeDetailResponse;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeResult;
+import capstone.mju.backend.domain.recipe.dto.response.RecipeSuggestionResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.Map;
 public class OpenAiService {
     @Value("${openai.api-key}")
     private String openAiApiKey;
+
     private final WebClient openAiWebClient;
 
     @Value("${openai.model}")
@@ -28,10 +32,8 @@ public class OpenAiService {
     @Value("${openai.max-tokens}")
     private int maxTokens;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /*
-    promt 작성
-     */
     public RecipeResult createRecipePromptAndTitle(String ingredients) {
         String prompt = String.format(
                 "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
@@ -41,30 +43,61 @@ public class OpenAiService {
                 ingredients
         );
 
-        String response = openAiWebClient.post()
+        String response = callOpenAi(prompt);
+        return parseRecipeResultFromResponse(response);
+    }
+
+    public List<RecipeSuggestionResponse> generateRecipeSuggestions(List<String> ingredients) {
+        String prompt = String.format("""
+            아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
+            각 요리는 제목(title)과 필요한 재료 리스트(ingredients)로 구성돼야 해.
+            반드시 JSON 형식으로 반환해줘:
+
+            [
+              {
+                "title": "요리 이름",
+                "ingredients": ["재료1", "재료2", ...]
+              },
+              ...
+            ]
+
+            사용자 재료: %s
+        """, String.join(", ", ingredients));
+
+        String response = callOpenAi(prompt);
+        return parseRecipeSuggestions(response);
+    }
+
+    public RecipeDetailResponse generateRecipeDetail(String title) {
+        String prompt = String.format("""
+            "%s"라는 요리의 전체 재료 목록과 조리 순서를 다음 JSON 형식으로 응답해줘.
+            {
+              "title": "요리 제목",
+              "ingredients": ["재료1", "재료2", ...],
+              "steps": ["1단계 설명", "2단계 설명", ...]
+            }
+        """, title);
+
+        String response = callOpenAi(prompt);
+        return parseRecipeDetail(response);
+    }
+
+    private String callOpenAi(String prompt) {
+        return openAiWebClient.post()
                 .uri("/v1/chat/completions")
                 .header("Authorization", "Bearer " + openAiApiKey)
                 .bodyValue(buildRequestBody(prompt))
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-
-        return parseRecipeResultFromResponse(response);
     }
 
-
-    /*
-    Chat Gpt 세팅
-     */
     private Map<String, Object> buildRequestBody(String prompt) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", openAiModel);
 
         List<Map<String, String>> messages = List.of(
-                Map.of(
-                        "role", "user",
-                        "content", prompt
-                )
+                Map.of("role", "user", "content", prompt)
         );
         requestBody.put("messages", messages);
         requestBody.put("temperature", temperature);
@@ -73,24 +106,45 @@ public class OpenAiService {
         return requestBody;
     }
 
-    /*
-    제목, 레시피 순서 파싱 메소드
-     */
     private RecipeResult parseRecipeResultFromResponse(String response) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(response);
             String content = root.path("choices").get(0).path("message").path("content").asText();
 
             String[] lines = content.split("\n", 2);
             String titleLine = lines[0];
             String steps = lines.length > 1 ? lines[1].trim() : "";
-
-            String title = titleLine.replace("제목:", "").trim();
+            String title = titleLine.replace("title:", "").trim();
 
             return new RecipeResult(title, steps);
         } catch (Exception e) {
             throw new RuntimeException("OpenAI 응답 파싱 실패", e);
+        }
+    }
+
+    private List<RecipeSuggestionResponse> parseRecipeSuggestions(String response) {
+        try {
+            String content = objectMapper.readTree(response)
+                    .path("choices").get(0)
+                    .path("message")
+                    .path("content").asText();
+
+            return objectMapper.readValue(content, new TypeReference<List<RecipeSuggestionResponse>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("레시피 추천 응답 파싱 실패", e);
+        }
+    }
+
+    private RecipeDetailResponse parseRecipeDetail(String response) {
+        try {
+            String content = objectMapper.readTree(response)
+                    .path("choices").get(0)
+                    .path("message")
+                    .path("content").asText();
+
+            return objectMapper.readValue(content, RecipeDetailResponse.class);
+        } catch (Exception e) {
+            throw new RuntimeException("레시피 상세 응답 파싱 실패", e);
         }
     }
 }

@@ -1,14 +1,12 @@
 package capstone.mju.backend.domain.recipe.service;
 
 import capstone.mju.backend.domain.recipe.domain.Ingredient;
+import capstone.mju.backend.domain.recipe.dto.request.RecipeSuggestionRequest;
 import capstone.mju.backend.domain.recipe.dto.request.ScrapRecipeRequest;
-import capstone.mju.backend.domain.recipe.dto.response.RecipeResult;
-import capstone.mju.backend.domain.recipe.dto.response.ScrapRecipeResponse;
+import capstone.mju.backend.domain.recipe.dto.response.*;
 import capstone.mju.backend.domain.recipe.repository.IngredientRepository;
 import capstone.mju.backend.domain.recipe.domain.Recipe;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeDto;
-import capstone.mju.backend.domain.recipe.dto.response.RecipeListResponse;
-import capstone.mju.backend.domain.recipe.dto.response.RecipeResponse;
 import capstone.mju.backend.domain.recipe.repository.RecipeRepository;
 import capstone.mju.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -130,5 +128,11 @@ public class RecipeService {
                 .orElseThrow(() -> new RuntimeException("레시피를 찾을 수 없습니다."));
     }
 
+    public RecipeSuggestionListResponse suggestRecipes(RecipeSuggestionRequest request) {
+        List<RecipeSuggestionResponse> suggestions = openAiService.generateRecipeSuggestions(request.getIngredients());
+        return RecipeSuggestionListResponse.builder()
+                .suggestions(suggestions)
+                .build();
+    }
 
 }
