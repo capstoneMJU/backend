@@ -14,6 +14,7 @@ import capstone.mju.backend.global.auth.PasswordHashEncryption;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -80,5 +81,6 @@ public class AuthService {
                 .path("/")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
 }
