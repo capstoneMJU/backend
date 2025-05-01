@@ -50,4 +50,5 @@ public class AuthenticationExtractor {
                     return new UnauthorizedException(ErrorCode.INVALID_TOKEN, "로그인 여부를 확인해주세요.");
                 });
     }
+}
 
