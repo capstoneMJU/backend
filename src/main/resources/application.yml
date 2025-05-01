@@ -6,7 +6,11 @@ spring:
       - application-database.yml
       - application-ocr.yml
       - application-security.yml
+<<<<<<< HEAD
       - application-openai.yml
+=======
+      - application-client.yml
+>>>>>>> 696900acf41486cf9b999e3d0a4d1caa889e08cf
   cache:
     type: simple
   thymeleaf:
@@ -14,6 +18,8 @@ spring:
 
 server:
   port: 8080
+  http2:
+    enabled: true
   error:
     include-exception: true
     include-stacktrace: always
