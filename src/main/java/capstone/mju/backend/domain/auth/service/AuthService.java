@@ -8,6 +8,7 @@ import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.common.exception.UnauthorizedException;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.domain.user.dto.request.LoginDto;
+import capstone.mju.backend.domain.user.dto.response.LoginData;
 import capstone.mju.backend.global.auth.JwtEncoder;
 import capstone.mju.backend.global.auth.JwtTokenProvider;
 import capstone.mju.backend.global.auth.PasswordHashEncryption;
@@ -59,7 +60,7 @@ public class AuthService {
     /*
     login
      */
-    public void login(LoginDto loginDto, HttpServletResponse response) {
+    public LoginData login(LoginDto loginDto, HttpServletResponse response) {
         log.info("login 진입");
         User user = this.authRepository.findByEmail(loginDto.getEmail());
 
@@ -80,7 +81,9 @@ public class AuthService {
                 .secure(true)
                 .path("/")
                 .build();
+        LoginData loginData = new LoginData(accessToken.toString());
         response.addHeader("Set-Cookie", cookie.toString());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        return loginData;
     }
 }
