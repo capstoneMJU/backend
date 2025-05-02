@@ -3,12 +3,12 @@ package capstone.mju.backend.domain.nutrition.dto.res;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -71,31 +71,15 @@ public class FoodNamedetailResponse {
     @Schema(description = "트랜스지방산 (g)", example = "0.5")
     private Double transFat;
 
-    @Schema(description = "갈락토오스 (g)", example = "0.1")
+    // 👉 아래 항목은 0.0이면 응답 제외 & @Schema는 getter에 붙임
     private Double galactose;
-
-    @Schema(description = "과당 (g)", example = "0.2")
     private Double fructose;
-
-    @Schema(description = "당알콜 (g)", example = "0.3")
     private Double sugarAlcohol;
-
-    @Schema(description = "맥아당 (g)", example = "0.4")
     private Double maltose;
-
-    @Schema(description = "알룰로오스 (g)", example = "0.5")
     private Double allulose;
-
-    @Schema(description = "에리스리톨 (g)", example = "0.6")
     private Double erythritol;
-
-    @Schema(description = "유당 (g)", example = "0.7")
     private Double lactose;
-
-    @Schema(description = "자당 (g)", example = "0.8")
     private Double sucrose;
-
-    @Schema(description = "포도당 (g)", example = "0.9")
     private Double glucose;
 
     @Schema(description = "식품 총중량 (g)", example = "500.0")
@@ -154,5 +138,55 @@ public class FoodNamedetailResponse {
         return new BigDecimal(result)
                 .setScale(1, RoundingMode.DOWN)
                 .doubleValue();
+    }
+
+    private boolean isZero(Double value) {
+        return value != null && value.equals(0.0);
+    }
+
+    // 🧾 커스텀 getter + Swagger 문서용 @Schema
+    @Schema(description = "갈락토오스 (g)", example = "0.1")
+    public Double getGalactose() {
+        return isZero(galactose) ? null : galactose;
+    }
+
+    @Schema(description = "과당 (g)", example = "0.2")
+    public Double getFructose() {
+        return isZero(fructose) ? null : fructose;
+    }
+
+    @Schema(description = "당알콜 (g)", example = "0.3")
+    public Double getSugarAlcohol() {
+        return isZero(sugarAlcohol) ? null : sugarAlcohol;
+    }
+
+    @Schema(description = "맥아당 (g)", example = "0.4")
+    public Double getMaltose() {
+        return isZero(maltose) ? null : maltose;
+    }
+
+    @Schema(description = "알룰로오스 (g)", example = "0.5")
+    public Double getAllulose() {
+        return isZero(allulose) ? null : allulose;
+    }
+
+    @Schema(description = "에리스리톨 (g)", example = "0.6")
+    public Double getErythritol() {
+        return isZero(erythritol) ? null : erythritol;
+    }
+
+    @Schema(description = "유당 (g)", example = "0.7")
+    public Double getLactose() {
+        return isZero(lactose) ? null : lactose;
+    }
+
+    @Schema(description = "자당 (g)", example = "0.8")
+    public Double getSucrose() {
+        return isZero(sucrose) ? null : sucrose;
+    }
+
+    @Schema(description = "포도당 (g)", example = "0.9")
+    public Double getGlucose() {
+        return isZero(glucose) ? null : glucose;
     }
 }
