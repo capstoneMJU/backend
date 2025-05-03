@@ -81,6 +81,10 @@ public class RecipeService {
             // 레시피 저장
             recipeRepository.save(existingRecipe);
         }
+        if (scrapRecipeRepository.existsByUserAndRecipe(user, existingRecipe)) {
+            throw new ForbiddenException(ErrorCode.ALREADY_SCRAPPED, "이미 저장된 레시피입니다.");
+        }
+
         ScrapRecipe scrapRecipe = ScrapRecipe.builder()
                 .user(user)
                 .recipe(existingRecipe)
@@ -105,9 +109,6 @@ public class RecipeService {
      */
     public RecipeDetailResponse getRecipeById(UUID recipeId, User user) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
-
-        // 유저가 이 레시피를 스크랩했는지 확인
-
         List<Ingredient> ingredients = recipe.getRequiredIngredients();
 
         return RecipeDetailResponse.of(
@@ -159,6 +160,7 @@ public class RecipeService {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND, "레시피를 찾을 수 없습니다."));
     }
+
     /*
     User, Recipe 권한 검증
      */
