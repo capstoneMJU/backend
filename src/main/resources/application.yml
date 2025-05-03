@@ -16,6 +16,12 @@ spring:
   thymeleaf:
     cache: false
 
+  web:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 server:
   port: 8080
   http2:
