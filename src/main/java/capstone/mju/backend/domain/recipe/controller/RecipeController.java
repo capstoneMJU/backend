@@ -135,7 +135,7 @@ public class RecipeController {
             @Parameter(hidden = true) @AuthenticatedUser User user,
             @PathVariable UUID recipeId
     ) {
-        recipeService.deleteRecipe(recipeId);
+        recipeService.deleteRecipe(user, recipeId);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 삭제 성공"),
                 HttpStatus.OK

@@ -53,49 +53,50 @@ public class RecipeService {
      */
     @Transactional
     public ScrapRecipeResponse scrapRecipe(User user, ScrapRecipeRequest request) {
-        List<Ingredient> ingredients = request.getIngredients().stream()
-                .map(ingredientRequest -> {
-                    Ingredient existingIngredient = ingredientRepository.findByName(ingredientRequest.getName());
+        Recipe existingRecipe = recipeRepository.findByTitle(request.getTitle());
 
-                    if (existingIngredient != null) {
-                        return existingIngredient;
-                    } else {
-                        Ingredient newIngredient = Ingredient.builder()
-                                .name(ingredientRequest.getName())
-                                .build();
-                        return ingredientRepository.save(newIngredient);
-                    }
-                })
-                .collect(Collectors.toList());
+        if (existingRecipe == null) {
+            List<Ingredient> ingredients = request.getIngredients().stream()
+                    .map(ingredientRequest -> {
+                        Ingredient existingIngredient = ingredientRepository.findByName(ingredientRequest.getName());
 
-        // Recipe 객체 생성
-        Recipe recipe = Recipe.builder()
-                .title(request.getTitle())
-                .requiredIngredients(ingredients)
-                .recipeContent(request.getSteps())
-                .build();
+                        if (existingIngredient != null) {
+                            return existingIngredient;
+                        } else {
+                            Ingredient newIngredient = Ingredient.builder()
+                                    .name(ingredientRequest.getName())
+                                    .build();
+                            return ingredientRepository.save(newIngredient);
+                        }
+                    })
+                    .collect(Collectors.toList());
 
-        // 레시피 저장
-        recipeRepository.save(recipe);
+            // 새로운 Recipe 객체 생성
+            existingRecipe = Recipe.builder()
+                    .title(request.getTitle())
+                    .requiredIngredients(ingredients)
+                    .recipeContent(request.getSteps())
+                    .build();
 
-        // ScrapRecipe 엔티티에 유저와 레시피 연결
+            // 레시피 저장
+            recipeRepository.save(existingRecipe);
+        }
         ScrapRecipe scrapRecipe = ScrapRecipe.builder()
                 .user(user)
-                .recipe(recipe)
+                .recipe(existingRecipe)
                 .build();
 
         scrapRecipeRepository.save(scrapRecipe);
 
-        // 반환
         return ScrapRecipeResponse.builder()
-                .recipeId(recipe.getId())
-                .title(recipe.getTitle())
-                .ingredients(ingredients.stream()
+                .recipeId(existingRecipe.getId())
+                .title(existingRecipe.getTitle())
+                .ingredients(existingRecipe.getRequiredIngredients().stream()
                         .map(ingredient -> ScrapRecipeResponse.IngredientSimpleResponse.builder()
                                 .name(ingredient.getName())
                                 .build())
                         .collect(Collectors.toList()))
-                .steps(recipe.getRecipeContent())
+                .steps(existingRecipe.getRecipeContent())
                 .build();
     }
 
@@ -106,11 +107,7 @@ public class RecipeService {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
 
         // 유저가 이 레시피를 스크랩했는지 확인
-        boolean isScrapByUser = scrapRecipeRepository.existsByUserAndRecipe(user, recipe);
 
-        if (!isScrapByUser) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_USER, "이 레시피는 유저가 스크랩한 레시피가 아닙니다.");
-        }
         List<Ingredient> ingredients = recipe.getRequiredIngredients();
 
         return RecipeDetailResponse.of(
@@ -131,6 +128,7 @@ public class RecipeService {
         List<RecipeDetailResponse> recipeResponses = scrapRecipes.stream()
                 .map(scrapRecipe -> {
                     Recipe recipe = scrapRecipe.getRecipe();
+                    validateUser(user, recipe);
                     return RecipeDetailResponse.of(
                             recipe.getId(),
                             recipe.getTitle(),
@@ -147,8 +145,10 @@ public class RecipeService {
     /*
     레시피 삭제
      */
-    public void deleteRecipe(UUID recipeId) {
+    @Transactional
+    public void deleteRecipe(User user, UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
+        validateUser(user, recipe);
         recipeRepository.delete(recipe);
     }
 
@@ -158,5 +158,16 @@ public class RecipeService {
     private Recipe findRecipeByIdOrThrow(UUID recipeId) {
         return recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND, "레시피를 찾을 수 없습니다."));
+    }
+    /*
+    User, Recipe 권한 검증
+     */
+    private boolean validateUser(User user, Recipe recipe) {
+        boolean isScrapByUser = scrapRecipeRepository.existsByUserAndRecipe(user, recipe);
+
+        if (!isScrapByUser) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_USER, "이 레시피는 유저가 스크랩한 레시피가 아닙니다.");
+        }
+        return isScrapByUser;
     }
 }
