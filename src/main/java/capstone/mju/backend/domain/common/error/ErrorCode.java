@@ -20,6 +20,7 @@ public enum ErrorCode {
 
     // 403 Forbidden
     FORBIDDEN_USER("4030", "접근 권한이 없습니다."),
+    ALREADY_SCRAPPED("4031", "이미 스크랩 된 내용입니다."),
 
     // 404 Not Found
     POST_NOT_FOUND("4040", "해당 포스트를 찾을 수 없습니다."),
