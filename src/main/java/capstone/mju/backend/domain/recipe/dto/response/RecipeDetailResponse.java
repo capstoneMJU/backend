@@ -27,4 +27,8 @@ public class RecipeDetailResponse {
     public static RecipeDetailResponse of(UUID id, String title, List<Ingredient> ingredients, String steps) {
         return new RecipeDetailResponse(id, title, ingredients, steps);
     }
+    public static RecipeDetailResponse of(String title, List<Ingredient> ingredients, String steps) {
+        return new RecipeDetailResponse(null, title, ingredients, steps);
+    }
+
 }
