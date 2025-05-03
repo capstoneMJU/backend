@@ -9,6 +9,7 @@ import capstone.mju.backend.global.auth.PasswordHashEncryption;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class UserService {
     private final PasswordHashEncryption passwordHashEncryption;
 
     // 이름 수정
+    @Transactional
     public String updateName(User user, String newName) {
         log.info("Updating name of user {}", user.getUsername());
         user.setName(newName);
@@ -28,6 +30,7 @@ public class UserService {
     }
 
     // 비밀번호 수정
+    @Transactional
     public void updatePassword(User user, String currentPassword, String newPassword) {
         if (!passwordHashEncryption.matches(currentPassword, user.getPassword())) {
             throw new UnauthorizedException(ErrorCode.UNAUTHORIZED_USER);
