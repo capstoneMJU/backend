@@ -60,7 +60,7 @@ public class UserController {
     }
 
     // 비밀번호 수정
-    @PutMapping("/user/ password")
+    @PutMapping("/user/password")
     public ResponseEntity<ResponseDto<Void>> updatePassword(@AuthenticatedUser User user, @RequestBody UpdatePasswordDto dto) {
         userService.updatePassword(user, dto.getCurrentPassword(), dto.getNewPassword());
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Password updated successfully"), HttpStatus.OK);
