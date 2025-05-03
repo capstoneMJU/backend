@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,20 @@ public class UserController {
         LoginData loginData = authService.login(loginDto, request);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "login successfully", loginData), HttpStatus.OK);
     }
+
     // 로그아웃
+    @PostMapping("/user/logout")
+    public ResponseEntity<ResponseDto<String>> logout(HttpServletResponse response) {
+        ResponseCookie deleteCookie = ResponseCookie.from("AccessToken", "")
+                .maxAge(0)
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
+                .path("/")
+                .build();
+        response.addHeader("Set-Cookie", deleteCookie.toString());
+
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "logout successfully", null), HttpStatus.OK);
+    }
     // 마이페이지
 }
