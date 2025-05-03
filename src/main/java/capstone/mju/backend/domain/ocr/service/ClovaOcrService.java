@@ -72,7 +72,7 @@ public class ClovaOcrService {
 
         // 품목번호 추출
         String itemReportNo = extractItemReportNo(ocrText);
-//
+
         // 디버깅 로그
         System.out.println("OCR 전체 텍스트 =====================");
         System.out.println(ocrText);
@@ -99,14 +99,26 @@ public class ClovaOcrService {
     }
 
     /**
-     * OCR 텍스트 내에서 내체당 이름이 포함돼 있는지 확인하고 관련 정보 반환
+     * OCR로 인식된 전체 텍스트에서 감미료 이름(정식 이름 또는 alias 포함)이 존재하는지 검사하여,
+     * 해당 감미료들의 상세 정보를 반환한다.
      */
     public ConfirmRes confirm(ConfirmReq req) {
         String ocrText = req.getOcrText();
 
         List<SugarSubstitute> allSubs = substituteRepository.findAll();
+
         List<SugarSubstituteRes> matched = allSubs.stream()
-                .filter(sub -> ocrText.contains(sub.getName()))
+                .filter(sub -> {
+                    // 정식 이름 포함 여부 확인
+                    if (ocrText.contains(sub.getName())) return true;
+                    // alias(유사어) 포함 여부 확인
+                    if (sub.getAlias() != null) {
+                        for (String alias : sub.getAlias().split(",")) {
+                            if (ocrText.contains(alias.trim())) return true;
+                        }
+                    }
+                    return false;
+                })
                 .map(sub -> new SugarSubstituteRes(
                         sub.getName(),
                         sub.getCategory(),

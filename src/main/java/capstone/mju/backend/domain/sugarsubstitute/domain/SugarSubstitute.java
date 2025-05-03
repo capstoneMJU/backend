@@ -17,6 +17,9 @@ public class SugarSubstitute {
 
     private String name; // 이름
 
+    @Column(length = 500)
+    private String alias; // 유사 표현 (쉼표로 구분된 문자열, 예: 알룰로오스,알룰로즈)
+
     @Column(length = 1000)
     private String description; // 설명
 
