@@ -2,7 +2,6 @@ package capstone.mju.backend.domain.recipe.service;
 
 import capstone.mju.backend.domain.recipe.domain.Ingredient;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeDetailResponse;
-import capstone.mju.backend.domain.recipe.dto.response.RecipeResult;
 import capstone.mju.backend.domain.recipe.dto.response.RecipeSuggestionResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

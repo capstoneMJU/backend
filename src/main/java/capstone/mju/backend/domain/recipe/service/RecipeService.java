@@ -48,6 +48,9 @@ public class RecipeService {
         return recipeDetailResponse;
     }
 
+    /*
+    레시피 스크랩
+     */
     @Transactional
     public ScrapRecipeResponse scrapRecipe(User user, ScrapRecipeRequest request) {
         List<Ingredient> ingredients = request.getIngredients().stream()
@@ -96,7 +99,9 @@ public class RecipeService {
                 .build();
     }
 
-
+    /*
+    스크랩 한 레시피 단건 조회
+     */
     public RecipeDetailResponse getRecipeById(UUID recipeId, User user) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
 
