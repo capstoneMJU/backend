@@ -35,7 +35,6 @@ public class OpenAiService {
     private int maxTokens;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     public RecipeDetailResponse createRecipePromptAndTitle(String title, String ingredients) {
         String prompt = String.format(
                 "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
@@ -47,24 +46,22 @@ public class OpenAiService {
         );
 
         String response = callOpenAi(prompt);
-        return parseRecipeResultFromResponse(response);
+        return parseRecipeResultFromResponse(response, ingredients);
     }
 
     public List<RecipeSuggestionResponse> generateRecipeSuggestions(String ingredients) {
         String prompt = String.format("""
-        아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
-        각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
-        아래 JSON 형식으로 응답해줘:
-
-        [
-          {
-            "title": "요리 이름",
-            "ingredients": "재료1, 재료2, 재료3"
-          }
-        ]
-
-        사용자 재료: %s
-    """, ingredients);
+                    아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
+                    각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
+                    아래 JSON 형식으로 응답해줘:
+                    [
+                      {
+                        "title": "요리 이름",
+                        "ingredients": "재료1, 재료2, 재료3"
+                      }
+                    ]
+                    사용자 재료: %s
+                """, ingredients);
 
         String response = callOpenAi(prompt);
         return parseRecipeSuggestions(response);
@@ -95,47 +92,42 @@ public class OpenAiService {
         return requestBody;
     }
 
-    private RecipeDetailResponse parseRecipeResultFromResponse(String response) {
+    public RecipeDetailResponse parseRecipeResultFromResponse(String response, String ingredients) {
         try {
             JsonNode root = objectMapper.readTree(response);
             String content = root.path("choices").get(0).path("message").path("content").asText();
 
-            String[] parts = content.split("steps:", 2);
+            String[] parts = content.split("ingredients:", 2);
             String titleLine = parts[0].trim();
             String title = titleLine.replace("title:", "").trim();
-            String steps = parts[1].trim();
 
-            String ingredientsLine = extractIngredientsFromContent(content);
-            List<Ingredient> ingredients = parseIngredients(ingredientsLine);
+            List<Ingredient> ingredientList = parseIngredients(ingredients);
+            log.info("Ingredients: {}", ingredientList);
 
-            log.info("Ingredients: {}", ingredients);
-            UUID recipeId = UUID.randomUUID();
+            String steps = parts[1].split("steps:", 2).length > 1 ? parts[1].split("steps:", 2)[1].trim() : "";
 
-            return RecipeDetailResponse.of(recipeId, title, ingredients, steps);
+            return RecipeDetailResponse.of(title, ingredientList, steps);
         } catch (Exception e) {
             throw new RuntimeException("OpenAI 응답 파싱 실패", e);
         }
     }
 
-    private String extractIngredientsFromContent(String content) {
-        String[] lines = content.split("\n");
-        for (String line : lines) {
-            if (line.toLowerCase().startsWith("ingredients:")) {
-                return line.replace("ingredients:", "").trim();
-            }
-        }
-        return "";
-    }
-
     private List<Ingredient> parseIngredients(String ingredientsLine) {
         String[] ingredientsArray = ingredientsLine.split(",");
-        return Arrays.stream(ingredientsArray)
-                .map(ingredient -> new Ingredient(ingredient.trim()))
+        List<Ingredient> ingredientList = Arrays.stream(ingredientsArray)
+                .map(ingredient -> {
+                    String cleanedIngredient = ingredient.replaceAll("^[0-9]+\\.", "").trim();
+                    return new Ingredient(cleanedIngredient);
+                })
                 .collect(Collectors.toList());
+        return ingredientList;
     }
 
     private List<RecipeSuggestionResponse> parseRecipeSuggestions(String response) {
+        System.out.println("OpenAI 응답: " + response);
         try {
+            System.out.println("Raw response: " + response);
+
             String content = objectMapper.readTree(response)
                     .path("choices").get(0)
                     .path("message")
@@ -147,7 +139,8 @@ public class OpenAiService {
 
             System.out.println("Parsed content: " + content);
 
-            return objectMapper.readValue(content, new TypeReference<List<RecipeSuggestionResponse>>() {});
+            return objectMapper.readValue(content, new TypeReference<List<RecipeSuggestionResponse>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("레시피 추천 응답 파싱 실패. 응답 내용: " + response, e);
