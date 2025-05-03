@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.recipe.controller;
 
 import capstone.mju.backend.domain.common.ResponseDto;
+import capstone.mju.backend.domain.recipe.dto.request.DetailRecipeRequestDto;
 import capstone.mju.backend.domain.recipe.dto.request.ScrapRecipeRequest;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeSuggestionRequest;
 import capstone.mju.backend.domain.recipe.dto.response.*;
@@ -9,12 +10,18 @@ import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -27,7 +34,19 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @PostMapping("/suggest")
-    @Operation(summary = "재료 기반 레시피 추천", description = "입력된 재료로 만들 수 있는 저칼로리 레시피들을 추천합니다.")
+    @Operation(
+            summary = "재료 기반 레시피 추천",
+            description = "입력된 재료로 만들 수 있는 저칼로리 레시피들을 추천합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "레시피 생성 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = RecipeSuggestionListResponse.class))),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청")})
     public ResponseEntity<ResponseDto<RecipeSuggestionListResponse>> suggestRecipes(
             @RequestBody RecipeSuggestionRequest request
     ) {
@@ -39,12 +58,25 @@ public class RecipeController {
     }
 
     @PostMapping("/createRecipe")
-    @Operation(summary = "저칼로리 레시피 생성", description = "입력된 재료와 제목을 바탕으로 저칼로리 레시피를 생성합니다.")
+    @Operation(summary = "저칼로리 레시피 생성", description = "입력된 재료와 제목을 바탕으로 저칼로리 레시피 목록을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "레시피 생성 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RecipeDetailResponse.class))),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 입력"
+            )})
     public ResponseEntity<ResponseDto<RecipeDetailResponse>> createRecipePromptAndTitle(
-            @RequestParam String title,  // 요리 제목
-            @RequestParam String ingredients  // 재료 목록 (쉼표로 구분된 문자열)
+            @Parameter(
+                    description = "레시피의 제목",
+                    example = "양파 토마토 스프"
+            ) @RequestBody DetailRecipeRequestDto requestDto
     ) {
-        RecipeDetailResponse response = recipeService.getRecipeDetail(title, ingredients);
+        RecipeDetailResponse response = recipeService.getRecipeDetail(requestDto.getTitle(), requestDto.getIngredients());
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 생성 성공", response),
                 HttpStatus.OK
@@ -53,6 +85,14 @@ public class RecipeController {
 
     @PostMapping("/scrap")
     @Operation(summary = "레시피 스크랩", description = "외부 레시피를 스크랩하여 저장합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "레시피 스크랩 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ScrapRecipeResponse.class)
+                    ))})
     public ResponseEntity<ResponseDto<ScrapRecipeResponse>> scrapRecipe(
             @Parameter(hidden = true) @AuthenticatedUser User user,
             @Validated @RequestBody ScrapRecipeRequest request
