@@ -1,5 +1,9 @@
 package capstone.mju.backend.domain.recipe.service;
 
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.ForbiddenException;
+import capstone.mju.backend.domain.common.exception.NotFoundException;
+import capstone.mju.backend.domain.common.exception.UnauthorizedException;
 import capstone.mju.backend.domain.recipe.domain.Ingredient;
 import capstone.mju.backend.domain.recipe.domain.ScrapRecipe;
 import capstone.mju.backend.domain.recipe.dto.request.RecipeSuggestionRequest;
@@ -100,12 +104,11 @@ public class RecipeService {
         boolean isScrapByUser = scrapRecipeRepository.existsByUserAndRecipe(user, recipe);
 
         if (!isScrapByUser) {
-            throw new RuntimeException("이 레시피는 유저가 스크랩한 레시피가 아닙니다.");
+            throw new ForbiddenException(ErrorCode.FORBIDDEN_USER, "이 레시피는 유저가 스크랩한 레시피가 아닙니다.");
         }
         List<Ingredient> ingredients = recipe.getRequiredIngredients();
 
         return RecipeDetailResponse.of(
-                recipe.getId(),
                 recipe.getTitle(),
                 ingredients,
                 recipe.getRecipeContent()
@@ -149,6 +152,6 @@ public class RecipeService {
      */
     private Recipe findRecipeByIdOrThrow(UUID recipeId) {
         return recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("레시피를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND, "레시피를 찾을 수 없습니다."));
     }
 }
