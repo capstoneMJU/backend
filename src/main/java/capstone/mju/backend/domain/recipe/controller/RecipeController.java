@@ -48,7 +48,7 @@ public class RecipeController {
                             responseCode = "400",
                             description = "잘못된 요청")})
     public ResponseEntity<ResponseDto<RecipeSuggestionListResponse>> suggestRecipes(
-            @RequestBody RecipeSuggestionRequest request
+            @Parameter(hidden = true) @AuthenticatedUser User user, @RequestBody RecipeSuggestionRequest request
     ) {
         RecipeSuggestionListResponse response = recipeService.suggestRecipes(request);
         return new ResponseEntity<>(
@@ -71,7 +71,7 @@ public class RecipeController {
                     description = "잘못된 입력"
             )})
     public ResponseEntity<ResponseDto<RecipeDetailResponse>> createRecipePromptAndTitle(
-            @Parameter(
+            @Parameter(hidden = true) @AuthenticatedUser User user, @Parameter(
                     description = "레시피의 제목",
                     example = "양파 토마토 스프"
             ) @RequestBody DetailRecipeRequestDto requestDto
