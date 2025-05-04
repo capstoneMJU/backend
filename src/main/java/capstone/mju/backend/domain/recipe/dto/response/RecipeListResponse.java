@@ -10,10 +10,11 @@ import java.util.List;
 @Getter
 @Schema(description = "재료 이름", example = "토마토")
 public class RecipeListResponse {
-    @Schema(description = "재료 이름", example = "토마토, 계란, 감자")
     private List<RecipeDetailResponse> recipes;
+    private int totalPages;
+    private long totalElements;
 
-    public static RecipeListResponse from(List<RecipeDetailResponse> recipes) {
-        return new RecipeListResponse(recipes);
+    public static RecipeListResponse from(List<RecipeDetailResponse> recipeResponses, int totalPages, long totalElements) {
+        return new RecipeListResponse(recipeResponses, totalPages, totalElements);
     }
 }
