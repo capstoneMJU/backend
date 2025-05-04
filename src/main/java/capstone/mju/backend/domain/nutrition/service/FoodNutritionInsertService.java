@@ -75,11 +75,10 @@ public class FoodNutritionInsertService {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
                     log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
-                    foodRepository.save(food);
                     // 중복 체크 후 저장
-//                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
-//                        foodRepository.save(food);
-//                    }
+                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
+                        foodRepository.save(food);
+                    }
                 }
 
                 page++;
