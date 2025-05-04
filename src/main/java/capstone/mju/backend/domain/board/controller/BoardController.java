@@ -15,6 +15,7 @@ import capstone.mju.backend.global.s3.S3ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -137,14 +138,37 @@ public class BoardController {
     }
 
     //통합 조회 : 상세페이지에 있는 데이터들
-    @Operation(summary = "게시글 상세 + 댓글 조회", description = "게시글과 댓글/대댓글을 함께 반환합니다.")
+    @Operation(
+            summary = "게시글 상세 + 댓글 조회 + 좋아요/댓글 갯수",
+            description = "게시글과 댓글/대댓글을 함께 반환합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글과 댓글/대댓글 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BoardDetailWithCommentsResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "게시글이 존재하지 않음",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @GetMapping("/{boardId}/full")
     public ResponseEntity<BoardDetailWithCommentsResponse> getFullBoardDetail(
             @AuthenticatedUser @Parameter(hidden = true) User user,
-            @PathVariable UUID boardId) {
+            @PathVariable @Parameter(description = "게시글 UUID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584") UUID boardId) {
 
         BoardDetailWithCommentsResponse response = boardService.getBoardDetailWithComments(user, boardId);
         return ResponseEntity.ok(response);
     }
+
 
 }
