@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -118,11 +120,14 @@ public class RecipeController {
     }
 
     @GetMapping
-    @Operation(summary = "모든 레시피 조회", description = "저장된 모든 레시피 목록을 조회합니다.")
+    @Operation(summary = "모든 레시피 조회 페이징", description = "저장된 모든 레시피 목록을 조회합니다.")
     public ResponseEntity<ResponseDto<RecipeListResponse>> getAllRecipes(
-            @Parameter(hidden = true) @AuthenticatedUser User user
+            @Parameter(hidden = true) @AuthenticatedUser User user,
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size
     ) {
-        RecipeListResponse recipes = recipeService.getAllRecipes(user);
+        Pageable pageable = PageRequest.of(page, size);
+        RecipeListResponse recipes = recipeService.getAllRecipes(user, pageable);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "모든 레시피 조회 성공", recipes),
                 HttpStatus.OK
