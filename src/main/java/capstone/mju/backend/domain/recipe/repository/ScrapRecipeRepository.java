@@ -3,6 +3,8 @@ package capstone.mju.backend.domain.recipe.repository;
 import capstone.mju.backend.domain.recipe.domain.Recipe;
 import capstone.mju.backend.domain.recipe.domain.ScrapRecipe;
 import capstone.mju.backend.domain.user.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,4 +16,6 @@ public interface ScrapRecipeRepository extends JpaRepository<ScrapRecipe, UUID> 
     List<ScrapRecipe> findByUser(User user);
 
     void deleteByUserAndRecipe(User user, Recipe recipe);
+
+    Page<ScrapRecipe> findByUser(User user, Pageable pageable);
 }
