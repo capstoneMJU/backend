@@ -25,6 +25,6 @@ public class AuthController {
     @PostMapping("/auth/join")
     public ResponseEntity<ResponseDto<Void>> join(@Valid @RequestBody JoinDto joinDto, HttpServletResponse response) {
         this.authService.join(joinDto, response);
-        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "join successfully"), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "join successfully"), HttpStatus.CREATED);
     }
 }
