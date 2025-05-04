@@ -16,7 +16,6 @@ import java.util.UUID;
 @Builder
 @Entity(name = "recipe")
 public class Recipe extends BaseEntity {
-    private UUID userId;
     private String title;
 
     @ManyToMany
