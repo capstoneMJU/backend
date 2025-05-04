@@ -12,4 +12,6 @@ public interface ScrapRecipeRepository extends JpaRepository<ScrapRecipe, UUID> 
     boolean existsByUserAndRecipe(User user, Recipe recipe);
 
     List<ScrapRecipe> findByUser(User user);
+
+    void deleteByUserAndRecipe(User user, Recipe recipe);
 }

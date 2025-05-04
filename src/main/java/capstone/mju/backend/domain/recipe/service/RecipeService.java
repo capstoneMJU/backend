@@ -150,6 +150,7 @@ public class RecipeService {
     public void deleteRecipe(User user, UUID recipeId) {
         Recipe recipe = findRecipeByIdOrThrow(recipeId);
         validateUser(user, recipe);
+        scrapRecipeRepository.deleteByUserAndRecipe(user, recipe);
         recipeRepository.delete(recipe);
     }
 
