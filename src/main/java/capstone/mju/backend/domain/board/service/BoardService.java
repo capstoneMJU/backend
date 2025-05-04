@@ -113,6 +113,8 @@ public class BoardService {
                         .title(board.getTitle())
                         .name(board.getUser().getUsername())
                         .content(board.getContent())
+                        .likeCount(board.getLikeCount())
+                        .commentCount(board.getCommentCount())
                         .build());
     }
     //전체 항목 조회

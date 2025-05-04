@@ -20,4 +20,10 @@ public class BoardCategoryResponse {
 
     @Schema(description = "게시글 내용", example = "냉장고 정리 요령 공유합니다.")
     private String content;
+
+    @Schema(description = "좋아요 수", example = "15")
+    private int likeCount;
+
+    @Schema(description = "댓글 수", example = "3")
+    private int commentCount;
 }
