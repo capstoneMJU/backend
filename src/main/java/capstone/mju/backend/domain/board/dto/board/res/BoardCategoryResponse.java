@@ -6,11 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @Schema(description = "카테고리별 게시글 응답")
 public class BoardCategoryResponse {
+    @Schema(description = "게시글 ID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584")
+    private UUID boardId; // boardId 추가
 
     @Schema(description = "게시글 제목", example = "자취생을 위한 꿀팁")
     private String title;

@@ -110,6 +110,7 @@ public class BoardService {
 
         return boardRepository.findByCategoryNameOrderByCreatedAtDesc(category, pageable)
                 .map(board -> BoardCategoryResponse.builder()
+                        .boardId(board.getId())
                         .title(board.getTitle())
                         .name(board.getUser().getUsername())
                         .content(board.getContent())
