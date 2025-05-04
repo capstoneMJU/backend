@@ -85,7 +85,7 @@ public class RecipeController {
         );
     }
 
-    @PostMapping("/scrap")
+    @PostMapping
     @Operation(summary = "레시피 스크랩", description = "외부 레시피를 스크랩하여 저장합니다.")
     @ApiResponses(value = {
             @ApiResponse(
