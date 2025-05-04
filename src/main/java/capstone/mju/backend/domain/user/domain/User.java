@@ -22,4 +22,11 @@ public class User extends BaseEntity {
 
     @Column(length = 100, nullable = false)
     private String password;
+
+    public void setName(String newName){
+        this.username = newName;
+    }
+    public void setPassword(String newPassword){
+        this.password = newPassword;
+    }
 }
