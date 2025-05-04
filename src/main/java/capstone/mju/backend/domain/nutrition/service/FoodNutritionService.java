@@ -4,7 +4,6 @@ import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
 import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
 import capstone.mju.backend.domain.nutrition.dto.res.FoodNamedetailResponse;
-import capstone.mju.backend.domain.nutrition.dto.res.FoodResponseDto;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +66,7 @@ public class FoodNutritionService {
 
 
     // 품목제조보고번호 검색 -> 영양성분 상세
-    public List<FoodResponseDto> getFoodDetailsByItemReportNo(String itemReportNo, int page) {
+    public List<FoodNamedetailResponse> getFoodDetailsByItemReportNo(String itemReportNo, int page) {
         validateSearchKeyword(itemReportNo);
         Pageable pageable = PageRequest.of(page, 10);
         Page<FoodNutrition> foods = foodRepository.findByItemReportNo(itemReportNo, pageable);
@@ -76,7 +75,7 @@ public class FoodNutritionService {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
         }
 
-        return foods.map(FoodResponseDto::fromEntity).getContent();
+        return foods.map(FoodNamedetailResponse::fromEntity).getContent();
     }
 
     // 공통 키워드 검증 메서드
