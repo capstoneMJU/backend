@@ -121,7 +121,7 @@ public class ClovaOcrService {
                 // 매핑 정보 반환용
                 matched.add(new SugarSubstituteRes(
                         sub.getName(),
-                        sub.getCategory(),
+                        sub.getCategory().getKoreanName(),
                         sub.getDescription(),
                         sub.getSideEffect(),
                         sub.getGiIndex(),
