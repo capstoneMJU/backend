@@ -1,3 +1,4 @@
+
 package capstone.mju.backend.domain.openapi.entity.repository;
 
 import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
