@@ -85,10 +85,8 @@ public class ClovaOcrService {
             throw new IllegalArgumentException("품목번호를 인식할 수 없습니다.");
         }
 
-        // DB에서 품목번호 기준으로 제품 검색
-        FoodNutrition food = foodNutritionRepository.findByItemReportNo(itemReportNo)
-                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
-
+        // 영양정보 엔티티 조회
+        FoodNutrition food = findFoodByItemReportNo(itemReportNo);
 
         ScanRes res = ScanRes.builder()
                 .productName(food.getFoodNmKr())
@@ -108,8 +106,7 @@ public class ClovaOcrService {
         String itemReportNo = req.getItemReportNo();
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = foodNutritionRepository.findByItemReportNo(itemReportNo)
-                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
+        FoodNutrition food = findFoodByItemReportNo(itemReportNo);
 
         // 전체 대체당 불러오기
         List<SugarSubstitute> allSubs = substituteRepository.findAll();
@@ -187,7 +184,9 @@ public class ClovaOcrService {
         }
     }
 
-    // 품목번호 추출
+    /**
+     *OCR 이미지에서 품목번호 추출
+     */
     private String extractItemReportNo(String ocrText) {
 //        // 1차: 키워드 기반 추출
 //        List<String> keywords = List.of("품목보고번호", "품목 번호", "식품보고번호", "목보고번호", "보고번호", "품목");
@@ -212,4 +211,13 @@ public class ClovaOcrService {
         // 3차: 추출 실패
         return null;
     }
+
+    /**
+     * DB에서 품목번호 기준으로 제품 검색
+     */
+    private FoodNutrition findFoodByItemReportNo(String itemReportNo) {
+        return foodNutritionRepository.findByItemReportNo(itemReportNo)
+                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
+    }
+
 }
