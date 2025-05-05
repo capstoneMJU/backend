@@ -1,6 +1,6 @@
-package capstone.mju.backend.domain.sugarsubstitute.domain.repository;
+package capstone.mju.backend.domain.sugarsubstitute.entity.repository;
 
-import capstone.mju.backend.domain.sugarsubstitute.domain.SugarSubstitute;
+import capstone.mju.backend.domain.sugarsubstitute.entity.SugarSubstitute;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SugarSubstituteRepository extends JpaRepository<SugarSubstitute, Long> {

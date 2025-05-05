@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.sugarsubstitute.domain;
+package capstone.mju.backend.domain.sugarsubstitute.entity;
 
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import jakarta.persistence.*;

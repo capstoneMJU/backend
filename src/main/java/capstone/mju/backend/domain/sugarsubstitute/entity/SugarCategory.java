@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.sugarsubstitute.domain;
+package capstone.mju.backend.domain.sugarsubstitute.entity;
 
 public enum SugarCategory {
     ARTIFICIAL("인공 감미료"), // 인공 감미료(합성 감미료)

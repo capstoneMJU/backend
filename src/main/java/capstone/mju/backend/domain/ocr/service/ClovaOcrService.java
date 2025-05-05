@@ -5,10 +5,10 @@ import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepo
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
-import capstone.mju.backend.domain.sugarsubstitute.domain.FoodNutritionSweetener;
-import capstone.mju.backend.domain.sugarsubstitute.domain.SugarSubstitute;
-import capstone.mju.backend.domain.sugarsubstitute.domain.repository.FoodNutritionSweetenerRepository;
-import capstone.mju.backend.domain.sugarsubstitute.domain.repository.SugarSubstituteRepository;
+import capstone.mju.backend.domain.sugarsubstitute.entity.FoodNutritionSweetener;
+import capstone.mju.backend.domain.sugarsubstitute.entity.SugarSubstitute;
+import capstone.mju.backend.domain.sugarsubstitute.entity.repository.FoodNutritionSweetenerRepository;
+import capstone.mju.backend.domain.sugarsubstitute.entity.repository.SugarSubstituteRepository;
 import capstone.mju.backend.domain.sugarsubstitute.dto.res.SugarSubstituteRes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

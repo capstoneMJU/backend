@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.sugarsubstitute.domain;
+package capstone.mju.backend.domain.sugarsubstitute.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
