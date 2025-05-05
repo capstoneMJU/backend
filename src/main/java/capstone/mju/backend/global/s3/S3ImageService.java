@@ -89,8 +89,8 @@ public class S3ImageService {
         try {
             System.out.println("Uploading image to S3: " + s3FileName);
             PutObjectRequest putObjectRequest =
-                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead);
+                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata);
+                           // .withCannedAcl(CannedAccessControlList.PublicRead);
             amazonS3.putObject(putObjectRequest); // S3에 이미지 업로드
 
             System.out.println("S3 업로드 성공: " + s3FileName);

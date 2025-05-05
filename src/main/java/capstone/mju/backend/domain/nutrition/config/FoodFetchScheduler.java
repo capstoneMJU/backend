@@ -11,7 +11,7 @@ public class FoodFetchScheduler {
 
     private final FoodNutritionInsertService foodService;
 
-    @Scheduled(cron = "0 0 3 6 * *") // 매월 1일 새벽 3시
+    @Scheduled(cron = "0 0 1 6 * *") // 매월 1일 새벽 3시
     public void scheduleFetch() {
         foodService.fetchAndSaveFoodData();
     }
