@@ -2,11 +2,17 @@ package capstone.mju.backend.domain.sugarsubstitute.domain;
 
 import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"food_nutrition_id", "sweetener_id"}
+        )
+)
 @NoArgsConstructor
 public class FoodNutritionSweetener {
     @Id
@@ -21,6 +27,7 @@ public class FoodNutritionSweetener {
     @JoinColumn(name = "sweetener_id")
     private SugarSubstitute sugarSubstitute; // 대체당
 
+    @Builder
     public FoodNutritionSweetener(FoodNutrition foodNutrition, SugarSubstitute sugarSubstitute) {
         this.foodNutrition = foodNutrition;
         this.sugarSubstitute = sugarSubstitute;

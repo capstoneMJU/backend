@@ -5,7 +5,9 @@ import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
 import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
 import capstone.mju.backend.domain.openapi.entity.repository.FoodNutritionRepository;
+import capstone.mju.backend.domain.sugarsubstitute.domain.FoodNutritionSweetener;
 import capstone.mju.backend.domain.sugarsubstitute.domain.SugarSubstitute;
+import capstone.mju.backend.domain.sugarsubstitute.domain.repository.FoodNutritionSweetenerRepository;
 import capstone.mju.backend.domain.sugarsubstitute.domain.repository.SugarSubstituteRepository;
 import capstone.mju.backend.domain.sugarsubstitute.dto.res.SugarSubstituteRes;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +31,6 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class ClovaOcrService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SugarSubstituteRepository substituteRepository;
     private final FoodNutritionRepository foodNutritionRepository;
+    private final FoodNutritionSweetenerRepository foodNutritionSweetenerRepository;
 
     @Value("${clova.ocr.api-url}")
     private String apiUrl;
@@ -84,18 +86,17 @@ public class ClovaOcrService {
         }
 
         // DB에서 품목번호 기준으로 제품 검색
-        Pageable pageable = PageRequest.of(0, 10); // 첫 페이지, 10개
-        Page<FoodNutrition> foods = foodNutritionRepository.findByItemReportNoContaining(itemReportNo, pageable);
+        FoodNutrition food = foodNutritionRepository.findByItemReportNo(itemReportNo)
+                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
 
-        if (foods.isEmpty()) {
-            throw new IllegalArgumentException("해당 품목번호의 제품을 찾을 수 없습니다.");
-        }
 
-        // 여러 개 있으면 첫 번째 꺼 사용
-        FoodNutrition food = foods.getContent().get(0);
+        ScanRes res = ScanRes.builder()
+                .productName(food.getFoodNmKr())
+                .itemReportNo(itemReportNo)
+                .ocrText(ocrText)
+                .build();
 
-        // 최종 반환
-        return new ScanRes(food.getFoodNmKr(), itemReportNo, ocrText);
+        return res;
     }
 
     /**
@@ -104,33 +105,55 @@ public class ClovaOcrService {
      */
     public ConfirmRes confirm(ConfirmReq req) {
         String ocrText = req.getOcrText();
+        String itemReportNo = req.getItemReportNo();
 
+        // 영양정보 엔티티 조회
+        FoodNutrition food = foodNutritionRepository.findByItemReportNo(itemReportNo)
+                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
+
+        // 전체 대체당 불러오기
         List<SugarSubstitute> allSubs = substituteRepository.findAll();
 
-        List<SugarSubstituteRes> matched = allSubs.stream()
-                .filter(sub -> {
-                    // 정식 이름 포함 여부 확인
-                    if (ocrText.contains(sub.getName())) return true;
-                    // alias(유사어) 포함 여부 확인
-                    if (sub.getAlias() != null) {
-                        for (String alias : sub.getAlias().split(",")) {
-                            if (ocrText.contains(alias.trim())) return true;
-                        }
-                    }
-                    return false;
-                })
-                .map(sub -> new SugarSubstituteRes(
+        // 매치된 대체당 찾기 및 저장
+        List<SugarSubstituteRes> matched = new ArrayList<>();
+
+        for (SugarSubstitute sub : allSubs) {
+            boolean matchedName = ocrText.contains(sub.getName());
+            boolean matchedAlias = sub.getAlias() != null &&
+                    Arrays.stream(sub.getAlias().split(","))
+                            .anyMatch(alias -> ocrText.contains(alias.trim()));
+
+            if (matchedName || matchedAlias) {
+                // 매핑 정보 반환용
+                matched.add(new SugarSubstituteRes(
                         sub.getName(),
                         sub.getCategory(),
                         sub.getDescription(),
                         sub.getSideEffect(),
                         sub.getGiIndex(),
                         sub.getCalorie()
-                ))
-                .collect(Collectors.toList());
+                ));
 
-        return new ConfirmRes(matched);
+                // 중복 매핑 방지 후 저장
+                boolean alreadyExists = foodNutritionSweetenerRepository.existsByFoodNutritionAndSugarSubstitute(food, sub);
+
+                if (!alreadyExists) {
+                    FoodNutritionSweetener mapping = FoodNutritionSweetener.builder()
+                                    .foodNutrition(food)
+                                    .sugarSubstitute(sub)
+                                    .build();
+                    foodNutritionSweetenerRepository.save(mapping);
+                }
+            }
+        }
+
+        ConfirmRes res = ConfirmRes.builder()
+                .matchedSubstitutes(matched)
+                .build();
+
+        return res;
     }
+
 
     /**
      *CLOVA OCR API 호출 - 이미지 파일을 base64로 인코딩해서 요청
@@ -180,7 +203,7 @@ public class ClovaOcrService {
 //        }
 
         // 2차: 정규식으로 13~15자리 숫자 중 첫 번째를 추출
-        Pattern pattern = Pattern.compile("\\d{13,15}");
+        Pattern pattern = Pattern.compile("\\d{13,16}");
         Matcher matcher = pattern.matcher(ocrText);
         if (matcher.find()) {
             return matcher.group();

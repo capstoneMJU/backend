@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FoodNutritionRepository extends JpaRepository<FoodNutrition, Long> {
@@ -12,7 +13,10 @@ public interface FoodNutritionRepository extends JpaRepository<FoodNutrition, Lo
     Page<FoodNutrition> findByItemReportNoContaining(String itemReportNo, Pageable pageable); //품목제조보고번호 입력
     boolean existsByItemReportNo(String itemReportNo); // 품목제조보고번호로 중복 체크
 
-
     // 품목번호로 찾기
     Optional<FoodNutrition> findByItemReportNo(String itemReportNo);
+
+
+
+
 }
