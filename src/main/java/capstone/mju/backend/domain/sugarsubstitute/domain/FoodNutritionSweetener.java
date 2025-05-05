@@ -1,6 +1,6 @@
 package capstone.mju.backend.domain.sugarsubstitute.domain;
 
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

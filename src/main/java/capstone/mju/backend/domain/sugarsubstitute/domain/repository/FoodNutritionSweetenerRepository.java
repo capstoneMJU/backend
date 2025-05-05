@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.sugarsubstitute.domain.repository;
 
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
+
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.sugarsubstitute.domain.FoodNutritionSweetener;
 import capstone.mju.backend.domain.sugarsubstitute.domain.SugarSubstitute;
 import org.springframework.data.jpa.repository.JpaRepository;

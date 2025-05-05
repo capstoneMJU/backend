@@ -19,6 +19,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/news/**").permitAll()
                         .requestMatchers("/api/v1/foods/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
+                        .requestMatchers("/api/v1/ocr/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(config -> config.disable())

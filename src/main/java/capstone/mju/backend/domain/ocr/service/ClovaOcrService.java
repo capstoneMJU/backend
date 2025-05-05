@@ -1,10 +1,10 @@
 package capstone.mju.backend.domain.ocr.service;
 
+import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
+import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
-import capstone.mju.backend.domain.openapi.entity.FoodNutrition;
-import capstone.mju.backend.domain.openapi.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.sugarsubstitute.domain.FoodNutritionSweetener;
 import capstone.mju.backend.domain.sugarsubstitute.domain.SugarSubstitute;
 import capstone.mju.backend.domain.sugarsubstitute.domain.repository.FoodNutritionSweetenerRepository;
@@ -17,9 +17,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
