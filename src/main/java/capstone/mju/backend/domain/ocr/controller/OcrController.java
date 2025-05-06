@@ -34,7 +34,7 @@ public class OcrController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OCR 스캔 성공",
                     content = @Content(schema = @Schema(implementation = ScanRes.class))),
-            @ApiResponse(responseCode = "400", description = "품목번호 인식 실패 또는 해당 제품이 DB에 존재하지 않음")
+            @ApiResponse(responseCode = "500", description = "품목번호 인식 실패 또는 해당 제품이 DB에 존재하지 않음")
     })
     @PostMapping("/scan")
     public ResponseEntity<ScanRes> scan(
@@ -56,7 +56,7 @@ public class OcrController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "대체당 정보 반환 성공",
                     content = @Content(schema = @Schema(implementation = ConfirmRes.class))),
-            @ApiResponse(responseCode = "400", description = "입력값 오류 또는 품목번호 불일치")
+            @ApiResponse(responseCode = "500", description = "입력값 오류 또는 품목번호 불일치")
     })
     @PostMapping("/confirm")
     public ResponseEntity<ConfirmRes> confirm(

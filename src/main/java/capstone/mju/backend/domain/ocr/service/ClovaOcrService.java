@@ -198,8 +198,8 @@ public class ClovaOcrService {
 //            }
 //        }
 
-        // 2차: 정규식으로 13~15자리 숫자 중 첫 번째를 추출
-        Pattern pattern = Pattern.compile("\\d{13,16}");
+        // 2차: 정규식으로 12~16자리 숫자 중 첫 번째를 추출
+        Pattern pattern = Pattern.compile("\\d{12,16}");
         Matcher matcher = pattern.matcher(ocrText);
         if (matcher.find()) {
             return matcher.group();
