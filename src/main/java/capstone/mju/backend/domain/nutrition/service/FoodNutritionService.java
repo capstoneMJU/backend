@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,29 +55,62 @@ public class FoodNutritionService {
     public List<FoodNameResponseDto> searchByItemReportNo(String itemReportNo, int page) {
         validateSearchKeyword(itemReportNo);
 
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNo(itemReportNo, pageable);
+        Pageable pageable = PageRequest.of(page, 500); // 충분히 큰 페이지로 설정
+        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
 
-        if (foods.isEmpty()) {
+        List<FoodNutrition> exactMatches = foods.stream()
+                .filter(food -> {
+                    String[] codes = food.getItemReportNo().split("/");
+                    for (String code : codes) {
+                        if (code.trim().equals(itemReportNo.trim())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .toList();
+
+        if (exactMatches.isEmpty()) {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
         }
 
-        return foods.map(FoodNameResponseDto::fromEntity).getContent();
+        return exactMatches.stream()
+                .map(FoodNameResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
+
+
 
 
     // 품목제조보고번호 검색 -> 영양성분 상세
     public List<FoodNamedetailResponse> getFoodDetailsByItemReportNo(String itemReportNo, int page) {
         validateSearchKeyword(itemReportNo);
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNo(itemReportNo, pageable);
 
-        if (foods.isEmpty()) {
+        Pageable pageable = PageRequest.of(page, 500);
+        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
+
+        List<FoodNutrition> exactMatches = foods.stream()
+                .filter(food -> {
+                    String[] codes = food.getItemReportNo().split("/");
+                    for (String code : codes) {
+                        if (code.trim().equals(itemReportNo.trim())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .toList();
+
+        if (exactMatches.isEmpty()) {
             throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
         }
 
-        return foods.map(FoodNamedetailResponse::fromEntity).getContent();
+        return exactMatches.stream()
+                .map(FoodNamedetailResponse::fromEntity)
+                .collect(Collectors.toList());
     }
+
+
 
     // 공통 키워드 검증 메서드
     private void validateSearchKeyword(String keyword) {
