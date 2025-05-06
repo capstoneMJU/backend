@@ -88,6 +88,9 @@ public class FoodNutrition {
     @Column(name = "food_ref_name")
     private String foodRefNm; // 대표 식품 명
 
+    @Column(name = "food_maker_name")
+    private String makerNm; //식품 회사 명
+
     @Column(name = "nutri_amount_serving")
     private String nutri_amount_serving; // 1회 섭취참고량
 

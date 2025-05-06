@@ -122,7 +122,7 @@ public class FoodNutritionInsertService {
         food.setNutri_amount_serving(item.path("NUTRI_AMOUNT_SERVING").asText(null));  // 1회 섭취참고량
         food.setZ10500(item.path("Z10500").asText(null));  // 식품 중량
         food.setSERVING_SIZE(item.path("SERVING_SIZE").asText(null));  // 1회 섭취량 (추가된 필드)
-
+        food.setMakerNm(item.path("MAKER_NM").asText()); // 회사명
         return food;
     }
 
