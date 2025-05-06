@@ -32,12 +32,10 @@ public class NewsService {
     private List<NewsResponseDto> cachedNews = new ArrayList<>();
 
     public void refreshNewsCache() {
-        List<NewsResponseDto> zeroCalorieNews = fetchNewsFromNaver("제로 칼로리");
-        List<NewsResponseDto> aspartameNews = fetchNewsFromNaver("대체당");
+        List<NewsResponseDto> zeroCalorieNews = fetchNewsFromNaver("대체당");
 
         List<NewsResponseDto> combined = new ArrayList<>();
         combined.addAll(zeroCalorieNews);
-        combined.addAll(aspartameNews);
 
         combined.sort((a, b) -> {
             ZonedDateTime dateA = ZonedDateTime.parse(a.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME);
