@@ -1,7 +1,11 @@
 package capstone.mju.backend.domain.ocr.service;
 
+import capstone.mju.backend.domain.common.error.ErrorCode;
+import capstone.mju.backend.domain.common.exception.CustomException;
+import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
+import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
@@ -21,6 +25,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -37,6 +44,7 @@ public class ClovaOcrService {
     private final SugarSubstituteRepository substituteRepository;
     private final FoodNutritionRepository foodNutritionRepository;
     private final FoodNutritionSweetenerRepository foodNutritionSweetenerRepository;
+    private final FoodNutritionService foodNutritionService;
 
     @Value("${clova.ocr.api-url}")
     private String apiUrl;
@@ -83,7 +91,7 @@ public class ClovaOcrService {
         }
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = findFoodByItemReportNo(itemReportNo);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo);
 
         ScanRes res = ScanRes.builder()
                 .productName(food.getFoodNmKr())
@@ -103,7 +111,7 @@ public class ClovaOcrService {
         String itemReportNo = req.getItemReportNo();
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = findFoodByItemReportNo(itemReportNo);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo);
 
         // 전체 대체당 불러오기
         List<SugarSubstitute> allSubs = substituteRepository.findAll();
@@ -212,9 +220,30 @@ public class ClovaOcrService {
     /**
      * DB에서 품목번호 기준으로 제품 검색
      */
-    private FoodNutrition findFoodByItemReportNo(String itemReportNo) {
-        return foodNutritionRepository.findByItemReportNo(itemReportNo)
-                .orElseThrow(() -> new IllegalArgumentException("품목번호에 해당하는 제품이 없습니다."));
+    private FoodNutrition getExactFoodByItemReportNo(String itemReportNo) {
+        validateSearchKeyword(itemReportNo);
+
+        Pageable pageable = PageRequest.of(0, 500); // 넉넉한 페이지
+        Page<FoodNutrition> foods = foodNutritionRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
+
+        return foods.stream()
+                .filter(food -> {
+                    String[] codes = food.getItemReportNo().split("/");
+                    for (String code : codes) {
+                        if (code.trim().equals(itemReportNo.trim())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
     }
+    private void validateSearchKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_SEARCH_KEYWORD);
+        }
+    }
+
 
 }
