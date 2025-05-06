@@ -2,7 +2,6 @@ package capstone.mju.backend.domain.ocr.service;
 
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
-import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
