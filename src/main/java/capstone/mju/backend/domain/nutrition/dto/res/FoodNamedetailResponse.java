@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Builder
 @Schema(description = "식품 상세 정보 응답 DTO")
 public class FoodNamedetailResponse {
+    @Schema(description = "Id", example = "1")
+    private String id;
 
     @Schema(description = "식품명", example = "김치")
     private String foodNmKr;
@@ -98,6 +100,7 @@ public class FoodNamedetailResponse {
         Double saturatedFat = entity.getAmtNum24();
 
         return FoodNamedetailResponse.builder()
+                .id(entity.getId().toString())
                 .foodNmKr(entity.getFoodNmKr())
                 .itemReportNo(entity.getItemReportNo())
                 .energy(entity.getAmtNum1())
