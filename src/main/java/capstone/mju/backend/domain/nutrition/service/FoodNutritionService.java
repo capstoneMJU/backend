@@ -110,6 +110,14 @@ public class FoodNutritionService {
                 .collect(Collectors.toList());
     }
 
+    //이름 검색 시
+    public FoodNamedetailResponse getDetailById(Long id) {
+        FoodNutrition entity = foodRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+
+        return FoodNamedetailResponse.fromEntity(entity);
+    }
+
 
 
     // 공통 키워드 검증 메서드

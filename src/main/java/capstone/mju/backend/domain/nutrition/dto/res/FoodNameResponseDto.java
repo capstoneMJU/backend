@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @AllArgsConstructor
 @Schema(description = "식품명 응답 DTO")
 public class FoodNameResponseDto {
+    @Schema(description = "Id", example = "1")
+    private String id;
 
     @Schema(description = "식품명", example = "김치")
     private String foodNmKr;
 
     public static FoodNameResponseDto fromEntity(FoodNutrition entity) {
         return FoodNameResponseDto.builder()
+                .id(entity.getId().toString())
                 .foodNmKr(entity.getFoodNmKr())
                 .build();
     }
