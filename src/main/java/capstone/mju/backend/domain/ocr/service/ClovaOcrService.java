@@ -95,6 +95,7 @@ public class ClovaOcrService {
         ScanRes res = ScanRes.builder()
                 .productName(food.getFoodNmKr())
                 .itemReportNo(itemReportNo)
+                .makerNm(food.getMakerNm())
                 .ocrText(ocrText)
                 .build();
 
@@ -192,27 +193,13 @@ public class ClovaOcrService {
      *OCR 이미지에서 품목번호 추출
      */
     private String extractItemReportNo(String ocrText) {
-//        // 1차: 키워드 기반 추출
-//        List<String> keywords = List.of("품목보고번호", "품목 번호", "식품보고번호", "목보고번호", "보고번호", "품목");
-//        for (String keyword : keywords) {
-//            int idx = ocrText.indexOf(keyword);
-//            if (idx != -1) {
-//                String after = ocrText.substring(idx + keyword.length());
-//                String digits = after.replaceAll("[^0-9]", "");
-//                if (digits.length() >= 13) {
-//                    return digits.substring(0, Math.min(digits.length(), 14));
-//                }
-//            }
-//        }
-
-        // 2차: 정규식으로 12~16자리 숫자 중 첫 번째를 추출
+        // 정규식으로 12~16자리 숫자 중 첫 번째를 추출
         Pattern pattern = Pattern.compile("\\d{12,16}");
         Matcher matcher = pattern.matcher(ocrText);
         if (matcher.find()) {
             return matcher.group();
         }
 
-        // 3차: 추출 실패
         return null;
     }
 
