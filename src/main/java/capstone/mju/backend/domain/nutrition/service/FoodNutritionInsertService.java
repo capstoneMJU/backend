@@ -75,13 +75,12 @@ public class FoodNutritionInsertService {
                     JsonNode item = iterator.next();
                     FoodNutrition food = parseFoodItem(item);
                     log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
-                    foodRepository.save(food);
                     // 중복 체크 후 저장
-//                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
-//                        foodRepository.save(food);
-//                    }
+                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
+                        foodRepository.save(food);
+                    }
                 }
-
+                log.info("현재 페이지: {}", page);
                 page++;
 
             } catch (Exception e) {
@@ -123,7 +122,7 @@ public class FoodNutritionInsertService {
         food.setNutri_amount_serving(item.path("NUTRI_AMOUNT_SERVING").asText(null));  // 1회 섭취참고량
         food.setZ10500(item.path("Z10500").asText(null));  // 식품 중량
         food.setSERVING_SIZE(item.path("SERVING_SIZE").asText(null));  // 1회 섭취량 (추가된 필드)
-
+        food.setMakerNm(item.path("MAKER_NM").asText()); // 회사명
         return food;
     }
 

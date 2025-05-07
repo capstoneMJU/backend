@@ -33,6 +33,8 @@ public enum ErrorCode {
 
     // 409 Conflict
     EMAIL_ALREADY_EXISTS("4090", "해당 이메일 사용자가 이미 존재합니다."),
+    CONFLICT("4091", "요청 충돌 발생"),
+    ALREADY_EXISTS("4092", "이미 존재합니다."),
 
     // 500 Server
     UNKNOWN_SERVER_ERROR("5000", "알 수 없는 서버 내부 오류입니다."),

@@ -2,7 +2,6 @@ package capstone.mju.backend.domain.nutrition.controller;
 
 import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
 import capstone.mju.backend.domain.nutrition.dto.res.FoodNamedetailResponse;
-import capstone.mju.backend.domain.nutrition.dto.res.FoodResponseDto;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionInsertService;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,31 +55,10 @@ public class FoodController {
     )
     @GetMapping("/search-names")
     public ResponseEntity<List<FoodNameResponseDto>> searchFoodNames(
-            @Parameter(description = "검색할 상품명 키워드", required = true) @RequestParam String keyword,
+            @Parameter(description = "검색할 상품명 키워드", required = true) @RequestParam String name,
             @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page
     ) {
-        List<FoodNameResponseDto> result = foodService.searchFoodNames(keyword, page);
-        return ResponseEntity.ok(result);
-    }
-
-    @Operation(
-            summary = "상품명 상세 검색",
-            description = "주어진 상품명으로 영양성분을 검색합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "영양성분 검색 성공",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = FoodNamedetailResponse.class))),
-                    @ApiResponse(responseCode = "400", description = "잘못된 키워드 입력 (INVALID_SEARCH_KEYWORD)"),
-                    @ApiResponse(responseCode = "404", description = "검색 결과 없음 (FOOD_NOT_FOUND)"),
-                    @ApiResponse(responseCode = "500", description = "서버 내부 오류 (INTERNAL_SERVER_ERROR)")
-            }
-    )
-    @GetMapping("/search-name-detail")
-    public ResponseEntity<List<FoodNamedetailResponse>> searchFoodNameDetail(
-            @Parameter(description = "검색할 상품명", required = true) @RequestParam String foodNmKr,
-            @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page
-    ) {
-        List<FoodNamedetailResponse> result = foodService.getFoodDetailsByFoodNameKr(foodNmKr, page);
+        List<FoodNameResponseDto> result = foodService.searchFoodNames(name, page);
         return ResponseEntity.ok(result);
     }
 
@@ -111,18 +89,41 @@ public class FoodController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "영양성분 검색 성공",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = FoodResponseDto.class))),
+                                    schema = @Schema(implementation = FoodNamedetailResponse.class))),
                     @ApiResponse(responseCode = "400", description = "잘못된 키워드 입력 (INVALID_SEARCH_KEYWORD)"),
                     @ApiResponse(responseCode = "404", description = "검색 결과 없음 (FOOD_NOT_FOUND)"),
                     @ApiResponse(responseCode = "500", description = "서버 내부 오류 (INTERNAL_SERVER_ERROR)")
             }
     )
     @GetMapping("/search-item-detail")
-    public ResponseEntity<List<FoodResponseDto>> searchByItemReportNoDetail(
+    public ResponseEntity<List<FoodNamedetailResponse>> searchByItemReportNoDetail(
             @Parameter(description = "품목제조보고번호", required = true) @RequestParam String itemReportNo,
             @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page
     ) {
-        List<FoodResponseDto> result = foodService.getFoodDetailsByItemReportNo(itemReportNo, page);
+        List<FoodNamedetailResponse> result = foodService.getFoodDetailsByItemReportNo(itemReportNo, page);
         return ResponseEntity.ok(result);
     }
+
+    @Operation(
+            summary = "ID 기반 식품 상세 조회",
+            description = "식품의 고유 ID(PK)를 이용하여 상세 영양정보를 조회합니다.",
+            parameters = {
+                    @Parameter(name = "id", description = "식품 고유 ID", required = true, example = "123")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "정상 반환",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = FoodNamedetailResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "해당 ID 식품 없음 (FOOD_NOT_FOUND)"),
+                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<FoodNamedetailResponse> getDetailById(
+            @PathVariable Long id
+    ) {
+        FoodNamedetailResponse detail = foodService.getDetailById(id);
+        return ResponseEntity.ok(detail);
+    }
+
 }
