@@ -42,6 +42,7 @@ jobs:
           echo "${{ secrets.APPLICATION_SECURITY_YML }}" | base64 --decode > src/main/resources/application-security.yml
           echo "${{ secrets.APPLICATION_OPENAPI_YML }}" | base64 --decode > src/main/resources/application-openapi.yml
           echo "${{ secrets.APPLICATION_OCR_YML }}" | base64 --decode > src/main/resources/application-ocr.yml
+          echo "${{ secrets.APPLICATION_OCR_YML }}" | base64 --decode > src/main/resources/application-openai.yml
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
