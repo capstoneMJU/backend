@@ -96,11 +96,11 @@ public class FoodController {
             }
     )
     @GetMapping("/search-item-detail")
-    public ResponseEntity<List<FoodNamedetailResponse>> searchByItemReportNoDetail(
-            @Parameter(description = "품목제조보고번호", required = true) @RequestParam String itemReportNo,
-            @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page
+    public ResponseEntity<FoodNamedetailResponse> searchByItemReportNoDetail(
+            @Parameter(description = "품목제조보고번호", required = true)
+            @RequestParam String itemReportNo
     ) {
-        List<FoodNamedetailResponse> result = foodService.getFoodDetailsByItemReportNo(itemReportNo, page);
+        FoodNamedetailResponse result = foodService.getFoodDetailsByItemReportNo(itemReportNo);
         return ResponseEntity.ok(result);
     }
 

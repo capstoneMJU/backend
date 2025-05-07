@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,13 +84,13 @@ public class FoodNutritionService {
 
 
     // 품목제조보고번호 검색 -> 영양성분 상세
-    public List<FoodNamedetailResponse> getFoodDetailsByItemReportNo(String itemReportNo, int page) {
+    public FoodNamedetailResponse getFoodDetailsByItemReportNo(String itemReportNo) {
         validateSearchKeyword(itemReportNo);
 
-        Pageable pageable = PageRequest.of(page, 500);
+        Pageable pageable = PageRequest.of(0, 500);
         Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
 
-        List<FoodNutrition> exactMatches = foods.stream()
+        Optional<FoodNutrition> exactMatch = foods.stream()
                 .filter(food -> {
                     String[] codes = food.getItemReportNo().split("/");
                     for (String code : codes) {
@@ -99,16 +100,13 @@ public class FoodNutritionService {
                     }
                     return false;
                 })
-                .toList();
+                .findFirst();
 
-        if (exactMatches.isEmpty()) {
-            throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
-        }
-
-        return exactMatches.stream()
+        return exactMatch
                 .map(FoodNamedetailResponse::fromEntity)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
     }
+
 
     //이름 검색 시
     public FoodNamedetailResponse getDetailById(Long id) {
