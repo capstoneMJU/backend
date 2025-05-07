@@ -80,7 +80,7 @@ public class FoodNutritionInsertService {
                         foodRepository.save(food);
                     }
                 }
-
+                log.info("현재 페이지: {}", page);
                 page++;
 
             } catch (Exception e) {

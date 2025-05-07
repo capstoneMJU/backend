@@ -11,6 +11,8 @@ import lombok.*;
 @Builder
 @Schema(description = "식품 응답 DTO")
 public class FoodResponseDto {
+    @Schema(description = "Id", example = "1")
+    private String id;
 
     @Schema(description = "식품명", example = "김치")
     private String foodNmKr;          // 식품명
@@ -95,6 +97,7 @@ public class FoodResponseDto {
 
     public static FoodResponseDto fromEntity(FoodNutrition entity) {
         return FoodResponseDto.builder()
+                .id(entity.getId().toString())
                 .foodNmKr(entity.getFoodNmKr())
                 .foodCd(entity.getFoodCd())
                 .itemReportNo(entity.getItemReportNo())
