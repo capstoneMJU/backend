@@ -20,11 +20,13 @@ public enum ErrorCode {
 
     // 403 Forbidden
     FORBIDDEN_USER("4030", "접근 권한이 없습니다."),
+    ALREADY_SCRAPPED("4031", "이미 스크랩 된 내용입니다."),
 
     // 404 Not Found
     POST_NOT_FOUND("4040", "해당 포스트를 찾을 수 없습니다."),
     USER_NOT_FOUND("4041", "해당 유저를 찾을 수 없습니다. "),
     FOOD_NOT_FOUND("4042", "해당하는 식품 데이터를 찾을 수 없습니다."),
+    RECIPE_NOT_FOUND("4043", "해당 레시피를 찾을 수 없습니다."),
 
     // 405 Using wrong HTTP Method
     WRONG_METHOD("4050", "허용되지 않은 메소드 입니다."),
