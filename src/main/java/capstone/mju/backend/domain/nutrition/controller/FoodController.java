@@ -76,14 +76,16 @@ public class FoodController {
                     @ApiResponse(responseCode = "500", description = "서버 내부 오류 (INTERNAL_SERVER_ERROR)")
             }
     )
-    @GetMapping("/search-item-names")
-    public ResponseEntity<List<FoodNameResponseDto>> searchByItemReportNo(
-            @Parameter(description = "품목제조보고번호", required = true) @RequestParam String itemReportNo,
-            @Parameter(description = "페이지 번호", example = "0") @RequestParam(defaultValue = "0") int page
+    @GetMapping("/search-item-name")
+    public ResponseEntity<FoodNameResponseDto> searchByItemReportNo(
+            @Parameter(description = "품목제조보고번호", required = true)
+            @RequestParam String itemReportNo
     ) {
-        List<FoodNameResponseDto> result = foodService.searchByItemReportNo(itemReportNo, page);
+        FoodNameResponseDto result = foodService.searchByItemReportNo(itemReportNo);
         return ResponseEntity.ok(result);
     }
+
+
 
     @Operation(
             summary = "품목제조보고번호로 상세 정보 검색",

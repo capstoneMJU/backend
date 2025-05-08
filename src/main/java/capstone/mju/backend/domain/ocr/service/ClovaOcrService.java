@@ -4,7 +4,6 @@ import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
-import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
@@ -24,9 +23,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -43,7 +39,6 @@ public class ClovaOcrService {
     private final SugarSubstituteRepository substituteRepository;
     private final FoodNutritionRepository foodNutritionRepository;
     private final FoodNutritionSweetenerRepository foodNutritionSweetenerRepository;
-    private final FoodNutritionService foodNutritionService;
 
     @Value("${clova.ocr.api-url}")
     private String apiUrl;
@@ -209,8 +204,7 @@ public class ClovaOcrService {
     private FoodNutrition getExactFoodByItemReportNo(String itemReportNo) {
         validateSearchKeyword(itemReportNo);
 
-        Pageable pageable = PageRequest.of(0, 500); // 넉넉한 페이지
-        Page<FoodNutrition> foods = foodNutritionRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
+        List<FoodNutrition> foods = foodNutritionRepository.findByItemReportNoContaining(itemReportNo.trim());
 
         return foods.stream()
                 .filter(food -> {

@@ -59,13 +59,12 @@ public class FoodNutritionService {
     }
 
     // 품목제조보고번호 검색 -> 상품명
-    public List<FoodNameResponseDto> searchByItemReportNo(String itemReportNo, int page) {
+    public FoodNameResponseDto searchByItemReportNo(String itemReportNo) {
         validateSearchKeyword(itemReportNo);
 
-        Pageable pageable = PageRequest.of(page, 500); // 충분히 큰 페이지로 설정
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
+        List<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim());
 
-        List<FoodNutrition> exactMatches = foods.stream()
+        return foods.stream()
                 .filter(food -> {
                     String[] codes = food.getItemReportNo().split("/");
                     for (String code : codes) {
@@ -75,17 +74,10 @@ public class FoodNutritionService {
                     }
                     return false;
                 })
-                .toList();
-
-        if (exactMatches.isEmpty()) {
-            throw new CustomException(ErrorCode.FOOD_NOT_FOUND);
-        }
-
-        return exactMatches.stream()
+                .findFirst()
                 .map(FoodNameResponseDto::fromEntity)
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
     }
-
 
 
 
@@ -93,10 +85,9 @@ public class FoodNutritionService {
     public FoodNamedetailResponse getFoodDetailsByItemReportNo(String itemReportNo) {
         validateSearchKeyword(itemReportNo);
 
-        Pageable pageable = PageRequest.of(0, 500);
-        Page<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim(), pageable);
+        List<FoodNutrition> foods = foodRepository.findByItemReportNoContaining(itemReportNo.trim());
 
-        Optional<FoodNutrition> exactMatch = foods.stream()
+        return foods.stream()
                 .filter(food -> {
                     String[] codes = food.getItemReportNo().split("/");
                     for (String code : codes) {
@@ -106,12 +97,11 @@ public class FoodNutritionService {
                     }
                     return false;
                 })
-                .findFirst();
-
-        return exactMatch
+                .findFirst()
                 .map(FoodNamedetailResponse::fromEntity)
                 .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
     }
+
 
 
     //이름 검색 시
