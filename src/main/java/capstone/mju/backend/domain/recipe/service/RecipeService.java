@@ -106,6 +106,7 @@ public class RecipeService {
                 .build();
     }
 
+
     /*
     스크랩 한 레시피 단건 조회
      */
@@ -114,6 +115,7 @@ public class RecipeService {
         List<Ingredient> ingredients = recipe.getRequiredIngredients();
 
         return RecipeDetailResponse.of(
+                recipe.getId(),
                 recipe.getTitle(),
                 ingredients,
                 recipe.getRecipeContent()
