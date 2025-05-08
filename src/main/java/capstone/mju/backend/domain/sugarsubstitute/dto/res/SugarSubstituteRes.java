@@ -1,11 +1,12 @@
 package capstone.mju.backend.domain.sugarsubstitute.dto.res;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "감미료 상세 정보 DTO")
 public class SugarSubstituteRes {
     @Schema(description = "감미료 이름", example = "스테비아")
@@ -25,5 +26,16 @@ public class SugarSubstituteRes {
 
     @Schema(description = "칼로리", example = "0 kcal")
     private String calorie;
+
+    @Builder
+    public SugarSubstituteRes(String name, String category, String description, String sideEffect,
+                              String giIndex, String calorie){
+        this.name = name;
+        this.category = category;
+        this.description = description;
+        this.sideEffect = sideEffect;
+        this.giIndex = giIndex;
+        this.calorie = calorie;
+    }
 }
 
