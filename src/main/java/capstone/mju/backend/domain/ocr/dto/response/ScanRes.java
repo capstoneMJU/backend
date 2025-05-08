@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "OCR 스캔 결과 DTO")
 public class ScanRes {
     @Schema(description = "제품명", example = "제로콜라")
-    private String productName; // 제품명
+    private String foodNmKr; // 제품명
 
     @Schema(description = "품목보고번호", example = "19970353001114")
     private String itemReportNo; // 품목번호
@@ -23,8 +23,8 @@ public class ScanRes {
     private String ocrText; // OCR 전체 텍스트
 
     @Builder
-    public ScanRes(String productName, String itemReportNo, String makerNm, String ocrText){
-        this.productName = productName;
+    public ScanRes(String foodNmKr, String itemReportNo, String makerNm, String ocrText){
+        this.foodNmKr = foodNmKr;
         this.itemReportNo = itemReportNo;
         this.makerNm = makerNm;
         this.ocrText = ocrText;

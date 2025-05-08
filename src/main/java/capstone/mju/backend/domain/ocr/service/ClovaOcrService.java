@@ -93,7 +93,7 @@ public class ClovaOcrService {
         FoodNutrition food = getExactFoodByItemReportNo(itemReportNo);
 
         ScanRes res = ScanRes.builder()
-                .productName(food.getFoodNmKr())
+                .foodNmKr(food.getFoodNmKr())
                 .itemReportNo(itemReportNo)
                 .makerNm(food.getMakerNm())
                 .ocrText(ocrText)
