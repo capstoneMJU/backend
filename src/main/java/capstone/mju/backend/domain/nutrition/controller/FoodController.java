@@ -5,6 +5,7 @@ import capstone.mju.backend.domain.nutrition.dto.res.FoodNamedetailResponse;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionInsertService;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
 import capstone.mju.backend.domain.sugarsubstitute.dto.res.SugarSubstituteRes;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -136,7 +137,7 @@ public class FoodController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "정상 반환",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = FoodNamedetailResponse.class))),
+                                    array = @ArraySchema(schema = @Schema(implementation = SugarSubstituteRes.class)))),
                     @ApiResponse(responseCode = "404", description = "해당 ID 식품 없음 (FOOD_NOT_FOUND)"),
                     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
             }
