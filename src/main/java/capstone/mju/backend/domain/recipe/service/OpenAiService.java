@@ -50,7 +50,7 @@ public class OpenAiService {
 
     public List<RecipeSuggestionResponse> generateRecipeSuggestions(String ingredients) {
         String prompt = String.format("""
-                    아래 재료를 사용해서 만들 수 있는 요리 3~5개를 추천해줘.
+                    아래 재료를 사용해서 만들 수 있는 저칼로리 요리 3~5개를 추천해줘.
                     각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
                     아래 JSON 형식으로 응답해줘:
                     [
