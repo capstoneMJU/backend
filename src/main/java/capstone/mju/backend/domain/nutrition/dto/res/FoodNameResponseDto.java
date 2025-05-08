@@ -18,10 +18,14 @@ public class FoodNameResponseDto {
     @Schema(description = "식품명", example = "김치")
     private String foodNmKr;
 
+    @Schema(description = "식품회사명", example = "롯데")
+    private String makerNm; //식품 회사 명
+
     public static FoodNameResponseDto fromEntity(FoodNutrition entity) {
         return FoodNameResponseDto.builder()
                 .id(entity.getId().toString())
                 .foodNmKr(entity.getFoodNmKr())
+                .makerNm(entity.getMakerNm())
                 .build();
     }
 }
