@@ -4,6 +4,7 @@ import capstone.mju.backend.domain.nutrition.dto.res.FoodNameResponseDto;
 import capstone.mju.backend.domain.nutrition.dto.res.FoodNamedetailResponse;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionInsertService;
 import capstone.mju.backend.domain.nutrition.service.FoodNutritionService;
+import capstone.mju.backend.domain.sugarsubstitute.dto.res.SugarSubstituteRes;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -126,6 +127,29 @@ public class FoodController {
     ) {
         FoodNamedetailResponse detail = foodService.getDetailById(id);
         return ResponseEntity.ok(detail);
+    }
+
+    @Operation(
+            summary = "ID 기반 대체당 목록 조회",
+            description = "식품의 고유 ID(PK)를 이용하여 해당 식품과 연관된 대체당 목록을 조회합니다.(아무도 사진찍은 적이 없으면 대체당 정보도 없음)",
+            parameters = {
+                    @Parameter(name = "id", description = "식품 고유 ID", required = true, example = "69907")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "정상 반환",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = FoodNamedetailResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "해당 ID 식품 없음 (FOOD_NOT_FOUND)"),
+                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            }
+    )
+    @GetMapping("/{id}/sweeteners")
+    public ResponseEntity<List<SugarSubstituteRes>> getSweetenersByFoodId(
+            @Parameter(description = "조회할 식품의 고유ID", example = "69907")
+            @PathVariable Long id
+    ) {
+        List<SugarSubstituteRes> sweeteners = foodService.getSweetenersByFoodId(id);
+        return ResponseEntity.ok(sweeteners);
     }
 
 }

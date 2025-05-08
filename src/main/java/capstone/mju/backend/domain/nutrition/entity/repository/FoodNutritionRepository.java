@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+import java.util.Optional;
+
 public interface FoodNutritionRepository extends JpaRepository<FoodNutrition, Long> {
     Page<FoodNutrition> findByFoodNmKrContaining(String foodNmKr, Pageable pageable); //상품명 입력
     Page<FoodNutrition> findByItemReportNo(String itemReportNo, Pageable pageable);//품목제조보고번호 입력

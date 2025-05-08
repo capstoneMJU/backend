@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("api/v1/likes/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
                         .requestMatchers("/recipes/**").permitAll()
+                        .requestMatchers("/api/v1/ocr/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(config -> config.disable())
