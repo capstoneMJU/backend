@@ -127,14 +127,14 @@ public class ClovaOcrService {
 
             if (matchedName || matchedAlias) {
                 // 매핑 정보 반환용
-                matched.add(new SugarSubstituteRes(
-                        sub.getName(),
-                        sub.getCategory().getKoreanName(),
-                        sub.getDescription(),
-                        sub.getSideEffect(),
-                        sub.getGiIndex(),
-                        sub.getCalorie()
-                ));
+                matched.add(SugarSubstituteRes.builder()
+                        .name(sub.getName())
+                        .category(sub.getCategory().getKoreanName())
+                        .description(sub.getDescription())
+                        .sideEffect(sub.getSideEffect())
+                        .giIndex(sub.getGiIndex())
+                        .calorie(sub.getCalorie())
+                        .build());
 
                 // 중복 매핑 방지 후 저장
                 boolean alreadyExists = foodNutritionSweetenerRepository.existsByFoodNutritionAndSugarSubstitute(food, sub);
