@@ -7,6 +7,7 @@ import capstone.mju.backend.domain.common.ResponseDto;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.domain.user.dto.request.LoginDto;
 import capstone.mju.backend.domain.user.dto.response.LoginData;
+import capstone.mju.backend.domain.user.dto.response.UserEmailAndNameData;
 import capstone.mju.backend.domain.user.service.UserService;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,10 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -79,5 +77,18 @@ public class UserController {
     public ResponseEntity<ResponseDto<Void>> updatePassword(@Parameter(hidden = true) @AuthenticatedUser User user, @RequestBody UpdatePasswordDto dto) {
         userService.updatePassword(user, dto.getCurrentPassword(), dto.getNewPassword());
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "Password updated successfully"), HttpStatus.OK);
+    }
+
+    // user 메일, 비밀번호 반환
+    @GetMapping("/user")
+    @Operation(summary = "user 메일, 비밀번호 반환", description = "user 메일, 비밀번호 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공"),
+            @ApiResponse(responseCode = "4010", description = "현재 비밀번호가 올바르지 않음"),
+            @ApiResponse(responseCode = "4041", description = "유저를 찾을 수 없음")
+    })
+    public ResponseEntity<ResponseDto<UserEmailAndNameData>> getUserEmailAndName(@Parameter(hidden = true) @AuthenticatedUser User user) {
+        UserEmailAndNameData userEmailAndNameData = userService.getUserEmailAndName(user);
+        return new ResponseEntity<>(ResponseDto.res(HttpStatus.OK, "ok", userEmailAndNameData), HttpStatus.OK);
     }
 }
