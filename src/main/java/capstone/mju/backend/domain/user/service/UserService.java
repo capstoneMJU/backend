@@ -5,6 +5,7 @@ import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.common.exception.UnauthorizedException;
 import capstone.mju.backend.domain.user.domain.User;
+import capstone.mju.backend.domain.user.dto.response.UserEmailAndNameData;
 import capstone.mju.backend.global.auth.PasswordHashEncryption;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,5 +40,9 @@ public class UserService {
         String encodedPassword = passwordHashEncryption.encrypt(newPassword);
         user.setPassword(encodedPassword);
         authRepository.save(user);
+    }
+
+    public UserEmailAndNameData getUserEmailAndName(User user) {
+        return UserEmailAndNameData.from(user.getEmail(), user.getUsername());
     }
 }
