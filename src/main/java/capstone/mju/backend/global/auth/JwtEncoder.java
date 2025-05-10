@@ -21,6 +21,6 @@ public class JwtEncoder {
     }
 
     public static String encodeJwtBearerToken(final String accessToken) {
-        return URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+        return URLEncoder.encode("Bearer "+accessToken, StandardCharsets.UTF_8);
     }
 }
