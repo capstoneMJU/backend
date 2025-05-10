@@ -30,7 +30,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @Tag(name = "Recipe", description = "레시피 관련 API")
-@RequestMapping("/recipes")
+@RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
     private final RecipeService recipeService;

@@ -19,8 +19,8 @@ public class AuthenticationConfig implements WebMvcConfigurer {
         registry.addInterceptor(authenticationInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/auth/**",
-                        "/user/login",
+                        "/api/v1/auth/**",
+                        "/api/v1/user/login",
                         "/hello",
                         "/health",
                         "/public/**",
