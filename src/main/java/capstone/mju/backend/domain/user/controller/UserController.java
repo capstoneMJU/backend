@@ -27,12 +27,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @Slf4j
+@RequestMapping("/api/v1/user")
 @Tag(name = "User API", description = "유저 관련 API")
 public class UserController {
     private final AuthService authService;
     private final UserService userService;
     // 로그인
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseEntity<ResponseDto<LoginData>> login(@RequestBody LoginDto loginDto, HttpServletResponse request) {
         log.info("login controller 진입");
         LoginData loginData = authService.login(loginDto, request);
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     // 로그아웃
-    @PostMapping("/user/logout")
+    @PostMapping("/logout")
     public ResponseEntity<ResponseDto<String>> logout(HttpServletResponse response) {
         ResponseCookie deleteCookie = ResponseCookie.from("AccessToken", "")
                 .maxAge(0)
@@ -55,7 +56,7 @@ public class UserController {
     }
 
     // 이름 수정
-    @PutMapping("/user/name")
+    @PutMapping("/name")
     @Operation(summary = "이름 수정", description = "현재 로그인한 유저의 이름을 새 이름으로 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이름 수정 성공")
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     // 비밀번호 수정
-    @PutMapping("/user/password")
+    @PutMapping("/password")
     @Operation(summary = "비밀번호 수정", description = "현재 비밀번호를 검증한 후 새 비밀번호로 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공"),
@@ -80,7 +81,7 @@ public class UserController {
     }
 
     // user 메일, 비밀번호 반환
-    @GetMapping("/user")
+    @GetMapping
     @Operation(summary = "user 메일, 비밀번호 반환", description = "user 메일, 비밀번호 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "비밀번호 수정 성공"),

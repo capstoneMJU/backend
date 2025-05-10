@@ -15,10 +15,10 @@ public class JwtEncoder {
         if (decodedToken.startsWith(TOKEN_TYPE)) {
             return decodedToken.substring(TOKEN_TYPE.length());
         }
-        throw new RuntimeException();
+        return decodedToken;
     }
 
     public static String encodeJwtBearerToken(final String accessToken) {
-        return URLEncoder.encode("Bearer " + accessToken, StandardCharsets.UTF_8);
+        return URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
     }
 }
