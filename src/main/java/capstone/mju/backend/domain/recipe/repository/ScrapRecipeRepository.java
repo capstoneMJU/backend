@@ -18,4 +18,6 @@ public interface ScrapRecipeRepository extends JpaRepository<ScrapRecipe, UUID> 
     void deleteByUserAndRecipe(User user, Recipe recipe);
 
     Page<ScrapRecipe> findByUser(User user, Pageable pageable);
+
+    List<ScrapRecipe> findTop5ByUserOrderByCreatedAtDesc(User user);
 }

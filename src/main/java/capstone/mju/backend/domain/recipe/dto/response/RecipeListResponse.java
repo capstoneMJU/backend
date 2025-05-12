@@ -3,11 +3,13 @@ package capstone.mju.backend.domain.recipe.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
+@RequiredArgsConstructor
 @Schema(description = "재료 이름", example = "토마토")
 public class RecipeListResponse {
     private List<RecipeDetailResponse> recipes;
