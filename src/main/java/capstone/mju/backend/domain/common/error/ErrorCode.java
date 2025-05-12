@@ -41,6 +41,7 @@ public enum ErrorCode {
     UNKNOWN_DB_ERROR("5001", "JPA 오류가 발생하였습니다."),
     NEWS_PARSE_ERROR("5003", "뉴스 응답 파싱에 실패하였습니다."),
     INTERNAL_SERVER_ERROR("5002", "서버 내부 오류가 발생했습니다."),
+    OCR_VISION_ERROR("5003","품목번호를 인식할 수 없습니다."),
 
     // 502 - Bad Gateway
     NEWS_API_ERROR("5020", "외부 뉴스 API(Naver) 요청 중 오류가 발생했습니다."),

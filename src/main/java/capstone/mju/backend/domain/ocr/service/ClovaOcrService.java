@@ -2,6 +2,7 @@ package capstone.mju.backend.domain.ocr.service;
 
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
+import capstone.mju.backend.domain.common.exception.DtoValidationException;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
@@ -81,7 +82,7 @@ public class ClovaOcrService {
         System.out.println("추출된 itemReportNo: [" + itemReportNo + "]");
 
         if (itemReportNo == null) {
-            throw new IllegalArgumentException("품목번호를 인식할 수 없습니다.");
+            throw new DtoValidationException(ErrorCode.OCR_VISION_ERROR, ocrText);
         }
 
         // 영양정보 엔티티 조회
