@@ -22,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록")
-    @PostMapping("/auth/join")
+    @PostMapping("/api/v1/auth/join")
     public ResponseEntity<ResponseDto<Void>> join(@Valid @RequestBody JoinDto joinDto, HttpServletResponse response) {
         this.authService.join(joinDto, response);
         return new ResponseEntity<>(ResponseDto.res(HttpStatus.CREATED, "join successfully"), HttpStatus.CREATED);
