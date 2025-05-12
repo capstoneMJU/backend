@@ -16,7 +16,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1/user/**", "/auth/join").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1/user/**", "/api/v1/auth/join").permitAll()
                         .requestMatchers("/api/v1/news/**").permitAll()
                         .requestMatchers("/api/v1/foods/**").permitAll()
@@ -28,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/comments/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/comments/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/comments/**").permitAll()
-                        .requestMatchers("api/v1/likes/**").permitAll()
+                        .requestMatchers("/api/v1/likes/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
                         .requestMatchers("/api/v1/recipes/**").permitAll()
                         .requestMatchers("/api/v1/ocr/**").permitAll()
