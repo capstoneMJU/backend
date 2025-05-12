@@ -14,4 +14,6 @@ public interface OcrScrapRepository extends JpaRepository<OcrScrap, UUID> {
     boolean existsByUserAndFoodNutrition(User user, FoodNutrition food);
 
     Page<OcrScrap> findAllByUser(User user, Pageable pageable);
+
+    Optional<OcrScrap> findByUserAndFoodNutrition(User user, FoodNutrition food);
 }

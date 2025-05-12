@@ -115,5 +115,15 @@ public class OcrController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "OCR 스크랩 삭제")
+    @DeleteMapping("/{foodId}")
+    public ResponseEntity<String> cancelScrap(
+            @PathVariable Long foodId,
+            @AuthenticatedUser User user
+    ) {
+        ocrScrapService.deleteScrap(user, foodId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

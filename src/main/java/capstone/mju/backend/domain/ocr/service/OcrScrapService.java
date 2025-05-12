@@ -45,4 +45,14 @@ public class OcrScrapService {
         return ocrScrapRepository.findAllByUser(user, pageable)
                 .map(scrap -> new FoodIdRes(scrap.getFoodNutrition().getId()));
     }
+
+    public void deleteScrap(User user, Long foodId) {
+        FoodNutrition food = foodNutritionRepository.findById(foodId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+
+        OcrScrap scrap = ocrScrapRepository.findByUserAndFoodNutrition(user, food)
+                .orElseThrow(() -> new CustomException(ErrorCode.SCRAP_NOT_FOUND));
+
+        ocrScrapRepository.delete(scrap);
+    }
 }
