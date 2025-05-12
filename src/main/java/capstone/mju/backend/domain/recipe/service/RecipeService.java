@@ -176,4 +176,21 @@ public class RecipeService {
         }
         return isScrapByUser;
     }
+
+    /*
+    레시피 최신 순 5개
+     */
+    public List<RecentRecipes> getRecentRecipes(User user) {
+        List<ScrapRecipe> recentRecipes = scrapRecipeRepository.findTop5ByUserOrderByCreatedAtDesc(user);
+
+        return recentRecipes.stream()
+                .map(recipe -> {
+                    List<String> ingredientNames = recipe.getRecipe().getRequiredIngredients().stream()
+                            .map(Ingredient::getName)
+                            .collect(Collectors.toList());
+
+                    return RecentRecipes.from(recipe.getRecipe().getId(), recipe.getRecipe().getTitle(), ingredientNames);
+                })
+                .collect(Collectors.toList());
+    }
 }
