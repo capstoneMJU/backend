@@ -1,14 +1,22 @@
 package capstone.mju.backend.domain.common.exception.dto;
 
 import capstone.mju.backend.domain.common.exception.CustomException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponseDto {
+    @JsonProperty("errorCode")
     private final String errorCode;
+
+    @JsonProperty("message")
     private final String message;
+
+    @JsonProperty("detail")
     private final String detail;
 
     public static ErrorResponseDto res(final CustomException customException){
