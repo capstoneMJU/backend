@@ -25,12 +25,13 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
 @Tag(name = "Recipe", description = "레시피 관련 API")
-@RequestMapping("/recipes")
+@RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -143,6 +144,19 @@ public class RecipeController {
         recipeService.deleteRecipe(user, recipeId);
         return new ResponseEntity<>(
                 ResponseDto.res(HttpStatus.OK, "레시피 삭제 성공"),
+                HttpStatus.OK
+        );
+    }
+
+    // 레시피 최신 순 5개
+    @GetMapping("/recent")
+    @Operation(summary = "최신 레시피 최대 5개 조회", description = "저장된 레시피 중 최신 5개의 목록을 조회합니다.")
+    public ResponseEntity<ResponseDto<List<RecentRecipes>>> getAllRecipes(
+            @Parameter(hidden = true) @AuthenticatedUser User user
+    ) {
+        List<RecentRecipes> recipes = recipeService.getRecentRecipes(user);
+        return new ResponseEntity<>(
+                ResponseDto.res(HttpStatus.OK, "최신 레시피 최대 5개 조회 성공", recipes),
                 HttpStatus.OK
         );
     }
