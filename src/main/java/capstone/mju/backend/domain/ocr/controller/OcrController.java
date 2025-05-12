@@ -6,6 +6,9 @@ import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
 import capstone.mju.backend.domain.ocr.service.ClovaOcrService;
 
+import capstone.mju.backend.domain.ocr.service.OcrScrapService;
+import capstone.mju.backend.domain.user.domain.User;
+import capstone.mju.backend.global.auth.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,11 +17,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/ocr")
@@ -26,6 +32,7 @@ import java.io.File;
 public class OcrController {
 
     private final ClovaOcrService clovaOcrService;
+    private final OcrScrapService ocrScrapService;
 
     @Operation(
             summary = "OCR 스캔",
@@ -80,5 +87,14 @@ public class OcrController {
     ) {
         ConfirmRes res = clovaOcrService.confirm(req);
         return ResponseEntity.ok(res);
+    }
+    @Operation(summary = "OCR 제품 스크랩")
+    @PostMapping("/scrap/{foodId}")
+    public ResponseEntity<String> scrap(
+            @PathVariable Long foodId,
+            @AuthenticatedUser User user
+    ) {
+        UUID scrapId = ocrScrapService.scrap(user, foodId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("ScrapID: " + scrapId);
     }
 }

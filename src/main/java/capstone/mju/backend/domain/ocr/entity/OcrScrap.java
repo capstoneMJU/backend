@@ -4,6 +4,7 @@ import capstone.mju.backend.domain.common.BaseEntity;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.user.domain.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,10 @@ public class OcrScrap extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_nutrition_id", nullable = false)
     private FoodNutrition foodNutrition;
+
+    @Builder
+    public OcrScrap(User user, FoodNutrition foodNutrition){
+        this.user = user;
+        this.foodNutrition = foodNutrition;
+    }
 }
