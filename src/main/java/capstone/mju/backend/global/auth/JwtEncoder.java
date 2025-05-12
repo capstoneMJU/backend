@@ -14,11 +14,14 @@ public class JwtEncoder {
 
         if (decodedToken.startsWith(TOKEN_TYPE)) {
             return decodedToken.substring(TOKEN_TYPE.length());
+        } else if (!decodedToken.isEmpty()) {
+            return decodedToken;
         }
-        throw new RuntimeException();
+        throw new IllegalArgumentException("Invalid JWT token");
     }
 
     public static String encodeJwtBearerToken(final String accessToken) {
-        return URLEncoder.encode("Bearer " + accessToken, StandardCharsets.UTF_8);
+        return URLEncoder.encode("Bearer "+accessToken, StandardCharsets.UTF_8);
+        // return URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
     }
 }
