@@ -1,4 +1,4 @@
-package capstone.mju.backend.domain.ocr.entity.repository;
+package capstone.mju.backend.domain.ocr.entity;
 
 import capstone.mju.backend.domain.common.BaseEntity;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
