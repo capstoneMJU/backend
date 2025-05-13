@@ -45,3 +45,4 @@ out/
 /src/main/resources/application-ocr.yml
 /src/main/resources/application-openai.yml
 /src/main/resources/application-client.yml
+/src/main/resources/application-openapi.yml
