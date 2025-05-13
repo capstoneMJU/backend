@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/ocr/**").permitAll()
                         .requestMatchers("/api/v1/user/login").permitAll()
                         .requestMatchers("/api/v1/image-search/**").permitAll()
+                        .requestMatchers("/api/v1/proxy/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(config -> config.disable())
