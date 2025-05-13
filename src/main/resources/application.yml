@@ -1,4 +1,5 @@
 spring:
+  port: 8080
   config:
     import:
       - application-s3.yml
@@ -18,6 +19,7 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
+      force-response: true  # ✅ 올바른 설정
 
 server:
   port: 8080
