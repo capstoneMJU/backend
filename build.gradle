@@ -55,6 +55,9 @@ dependencies {
     // 비동기
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.69.Final'
+    // 구글 커스텀 검색 엔진
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 }
 
