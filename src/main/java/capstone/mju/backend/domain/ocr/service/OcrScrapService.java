@@ -2,6 +2,7 @@ package capstone.mju.backend.domain.ocr.service;
 
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
+import capstone.mju.backend.domain.nutrition.dto.res.ScrapExistRes;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.ocr.dto.response.FoodIdRes;
@@ -69,5 +70,16 @@ public class OcrScrapService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SCRAP_NOT_FOUND));
 
         ocrScrapRepository.delete(scrap);
+    }
+
+    public ScrapExistRes existsScrap(User user, Long foodId) {
+        FoodNutrition food = foodNutritionRepository.findById(foodId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+
+        boolean exists = ocrScrapRepository.existsByUserAndFoodNutrition(user, food);
+
+        return ScrapExistRes.builder()
+                .scrapped(exists)
+                .build();
     }
 }
