@@ -6,3 +6,11 @@ naver:
     client-id: NFBCiQPMAwQTeOfJDxB1
     client-secret: HlME8WFALO
     url: https://openapi.naver.com/v1/search/news
+  images:
+    client-id: NFBCiQPMAwQTeOfJDxB1
+    client-secret: HlME8WFALO
+    url: https://openapi.naver.com/v1/search/image
+google:
+  api:
+    key: AIzaSyBY9D2ba6YGabH9rzbFynfDSXvnnn-Zduo
+    cx: b6434f9baf7ae44e6
