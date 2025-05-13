@@ -1,5 +1,6 @@
 package capstone.mju.backend.domain.ocr.controller;
 
+import capstone.mju.backend.domain.nutrition.dto.res.ScrapExistRes;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 
@@ -146,6 +147,25 @@ public class OcrController {
     ) {
         ocrScrapService.deleteScrap(user, foodId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "OCR 제품 스크랩 여부 확인",
+            description = "사용자가 특정 제품을 스크랩했는지 여부를 확인합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "스크랩 여부 반환 성공",
+                            content = @Content(schema = @Schema(implementation = ScrapExistRes.class))),
+                    @ApiResponse(responseCode = "4042", description = "존재하지 않는 foodId"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            }
+    )
+    @GetMapping("/{foodId}/exists")
+    public ResponseEntity<ScrapExistRes> existsScrap(
+            @Parameter(description = "식품고유ID", example = "123456") @PathVariable Long foodId,
+            @Parameter(hidden = true) @AuthenticatedUser User user
+    ) {
+        ScrapExistRes res = ocrScrapService.existsScrap(user, foodId);
+        return ResponseEntity.ok(res);
     }
 
 
