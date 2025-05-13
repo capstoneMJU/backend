@@ -86,7 +86,7 @@ public class ClovaOcrService {
         }
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, ocrText);
 
         ScanRes res = ScanRes.builder()
                 .foodNmKr(food.getFoodNmKr())
@@ -107,7 +107,7 @@ public class ClovaOcrService {
         String itemReportNo = req.getItemReportNo();
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, ocrText);
 
         // 전체 대체당 불러오기
         List<SugarSubstitute> allSubs = substituteRepository.findAll();
@@ -202,7 +202,7 @@ public class ClovaOcrService {
     /**
      * DB에서 품목번호 기준으로 제품 검색
      */
-    private FoodNutrition getExactFoodByItemReportNo(String itemReportNo) {
+    private FoodNutrition getExactFoodByItemReportNo(String itemReportNo, String ocrText) {
         validateSearchKeyword(itemReportNo);
 
         List<FoodNutrition> foods = foodNutritionRepository.findByItemReportNoContaining(itemReportNo.trim());
@@ -218,7 +218,7 @@ public class ClovaOcrService {
                     return false;
                 })
                 .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND,ocrText));
     }
     private void validateSearchKeyword(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
