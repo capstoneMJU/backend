@@ -51,7 +51,8 @@ public class OcrController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OCR 스캔 성공",
                     content = @Content(schema = @Schema(implementation = ScanRes.class))),
-            @ApiResponse(responseCode = "500", description = "품목번호 인식 실패 또는 해당 제품이 DB에 존재하지 않음")
+            @ApiResponse(responseCode = "4042", description = "해당하는 식품 데이터를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "5003", description = "품목번호를 인식할 수 없습니다.")
     })
     @PostMapping("/scan")
     public ResponseEntity<ScanRes> scan(
@@ -92,33 +93,56 @@ public class OcrController {
         ConfirmRes res = clovaOcrService.confirm(req);
         return ResponseEntity.ok(res);
     }
-    @Operation(summary = "OCR 제품 스크랩")
+    @Operation(
+            summary = "OCR 제품 스크랩",
+            description = "사용자가 OCR 분석된 제품을 스크랩합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "스크랩 성공"),
+                    @ApiResponse(responseCode = "4042", description = "존재하지 않는 foodId"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            }
+    )
     @PostMapping("/{foodId}")
     public ResponseEntity<String> scrap(
-            @PathVariable Long foodId,
-            @AuthenticatedUser User user
+            @Parameter(description = "스크랩할 foodId", example = "123456") @PathVariable Long foodId,
+            @Parameter(hidden = true) @AuthenticatedUser User user
     ) {
         UUID scrapId = ocrScrapService.scrap(user, foodId);
         return ResponseEntity.status(HttpStatus.CREATED).body("ScrapID: " + scrapId);
     }
 
-    @Operation(summary = "OCR 스크랩 목록 조회 (페이징 + 최신순)")
+    @Operation(
+            summary = "OCR 스크랩 목록 조회 (페이징 + 최신순)",
+            description = "사용자가 스크랩한 제품 목록을 페이지 단위로 최신순으로 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            }
+    )
     @GetMapping
     public ResponseEntity<OcrScrapRes> getScrapPage(
-            @AuthenticatedUser User user,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "3") int size
+            @Parameter(hidden = true) @AuthenticatedUser User user,
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")  @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지당 항목 수", example = "3")  @RequestParam(name = "size", defaultValue = "3") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         OcrScrapRes result = ocrScrapService.getScrapPage(user, pageable);
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "OCR 스크랩 삭제")
+    @Operation(
+            summary = "OCR 스크랩 삭제",
+            description = "사용자가 특정 제품에 대한 스크랩을 취소합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "삭제 성공"),
+                    @ApiResponse(responseCode = "4044", description = "스크랩 내역 없음"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            }
+    )
     @DeleteMapping("/{foodId}")
     public ResponseEntity<String> cancelScrap(
-            @PathVariable Long foodId,
-            @AuthenticatedUser User user
+            @Parameter(description = "스크랩 취소할 foodId", example = "123456") @PathVariable Long foodId,
+            @Parameter(hidden = true) @AuthenticatedUser User user
     ) {
         ocrScrapService.deleteScrap(user, foodId);
         return ResponseEntity.noContent().build();
