@@ -1,5 +1,5 @@
 spring:
-  port: 8081
+  port: 8080
   config:
     import:
       - application-s3.yml
@@ -22,7 +22,7 @@ spring:
       force-response: true  # ✅ 올바른 설정
 
 server:
-  port: 8081
+  port: 8080
   http2:
     enabled: true
   error:
