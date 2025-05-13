@@ -103,7 +103,7 @@ public class OcrController {
     }
 
     @Operation(summary = "OCR 스크랩 목록 조회 (페이징 + 최신순)")
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<OcrScrapRes> getScrapPage(
             @AuthenticatedUser User user,
             @RequestParam(name = "page", defaultValue = "0") int page,
