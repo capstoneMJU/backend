@@ -5,6 +5,7 @@ import capstone.mju.backend.domain.common.exception.CustomException;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
 import capstone.mju.backend.domain.ocr.dto.response.FoodIdRes;
+import capstone.mju.backend.domain.ocr.dto.response.OcrScrapRes;
 import capstone.mju.backend.domain.ocr.entity.OcrScrap;
 import capstone.mju.backend.domain.ocr.entity.repository.OcrScrapRepository;
 import capstone.mju.backend.domain.user.domain.User;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -41,9 +43,22 @@ public class OcrScrapService {
 
     }
 
-    public Page<FoodIdRes> getScrapPage(User user, Pageable pageable) {
-        return ocrScrapRepository.findAllByUser(user, pageable)
-                .map(scrap -> new FoodIdRes(scrap.getFoodNutrition().getId()));
+    public OcrScrapRes getScrapPage(User user, Pageable pageable) {
+        Page<OcrScrap> pageResult = ocrScrapRepository.findAllByUser(user, pageable);
+
+        List<FoodIdRes> content = pageResult.stream()
+                .map(scrap -> FoodIdRes.builder()
+                        .foodId(scrap.getFoodNutrition().getId())
+                        .foodNmKr(scrap.getFoodNutrition().getFoodNmKr())
+                        .build())
+                .toList();
+
+        return OcrScrapRes.builder()
+                .content(content)
+                .totalPages(pageResult.getTotalPages())
+                .totalElements(pageResult.getTotalElements())
+                .build();
+
     }
 
     public void deleteScrap(User user, Long foodId) {

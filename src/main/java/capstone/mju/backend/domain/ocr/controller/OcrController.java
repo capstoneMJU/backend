@@ -3,7 +3,7 @@ package capstone.mju.backend.domain.ocr.controller;
 import capstone.mju.backend.domain.ocr.dto.request.ConfirmReq;
 import capstone.mju.backend.domain.ocr.dto.response.ConfirmRes;
 
-import capstone.mju.backend.domain.ocr.dto.response.FoodIdRes;
+import capstone.mju.backend.domain.ocr.dto.response.OcrScrapRes;
 import capstone.mju.backend.domain.ocr.dto.response.ScanRes;
 import capstone.mju.backend.domain.ocr.service.ClovaOcrService;
 
@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -105,13 +104,13 @@ public class OcrController {
 
     @Operation(summary = "OCR 스크랩 목록 조회 (페이징 + 최신순)")
     @GetMapping("")
-    public ResponseEntity<Page<FoodIdRes>> getScrapPage(
+    public ResponseEntity<OcrScrapRes> getScrapPage(
             @AuthenticatedUser User user,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "3") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<FoodIdRes> result = ocrScrapService.getScrapPage(user, pageable);
+        OcrScrapRes result = ocrScrapService.getScrapPage(user, pageable);
         return ResponseEntity.ok(result);
     }
 
