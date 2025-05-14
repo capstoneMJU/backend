@@ -71,28 +71,29 @@ public class ClovaOcrService {
             fullTextBuilder.append(text).append(" ");
         }
         String ocrText = fullTextBuilder.toString().trim();
+        String cleanOcrText = ocrText.replaceAll("\\s+", "");
 
         // 품목번호 추출
-        String itemReportNo = extractItemReportNo(ocrText);
+        String itemReportNo = extractItemReportNo(cleanOcrText);
 
         // 디버깅 로그
         System.out.println("OCR 전체 텍스트 =====================");
-        System.out.println(ocrText);
+        System.out.println(cleanOcrText);
         System.out.println("=======================================");
         System.out.println("추출된 itemReportNo: [" + itemReportNo + "]");
 
         if (itemReportNo == null) {
-            throw new DtoValidationException(ErrorCode.OCR_VISION_ERROR, ocrText);
+            throw new DtoValidationException(ErrorCode.OCR_VISION_ERROR, cleanOcrText);
         }
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, ocrText);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, cleanOcrText);
 
         ScanRes res = ScanRes.builder()
                 .foodNmKr(food.getFoodNmKr())
                 .itemReportNo(itemReportNo)
                 .makerNm(food.getMakerNm())
-                .ocrText(ocrText)
+                .ocrText(cleanOcrText)
                 .build();
 
         return res;
