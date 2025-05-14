@@ -61,7 +61,7 @@ public class OcrScrapService {
                 .build();
 
     }
-
+    @Transactional
     public void deleteScrap(User user, Long foodId) {
         FoodNutrition food = foodNutritionRepository.findById(foodId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
