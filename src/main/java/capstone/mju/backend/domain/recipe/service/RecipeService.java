@@ -129,7 +129,7 @@ public class RecipeService {
     저장된 모든 레시피 조회
      */
     public RecipeListResponse getAllRecipes(User user, Pageable pageable) {
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.ASC, "createdAt"));
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ScrapRecipe> scrapRecipes = scrapRecipeRepository.findByUser(user, sortedPageable);
 
         List<RecipeDetailResponse> recipeResponses = scrapRecipes.stream()
