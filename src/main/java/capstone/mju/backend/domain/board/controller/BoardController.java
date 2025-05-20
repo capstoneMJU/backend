@@ -41,7 +41,8 @@ public class BoardController {
     // 게시글 작성
     @Operation(summary = "게시글 작성", description = "이미지 업로드 포함하여 게시글을 작성합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "게시글 생성 성공"),
+            @ApiResponse(responseCode = "201", description = "게시글 생성 성공",
+                    content = @Content(schema = @Schema(implementation =BoardCreateRequest.class))),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 형식", content = @Content),
             @ApiResponse(responseCode = "401", description = "로그인되지 않은 사용자", content = @Content),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
