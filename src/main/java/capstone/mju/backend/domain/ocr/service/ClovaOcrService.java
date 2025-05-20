@@ -71,28 +71,29 @@ public class ClovaOcrService {
             fullTextBuilder.append(text).append(" ");
         }
         String ocrText = fullTextBuilder.toString().trim();
+        String cleanOcrText = ocrText.replaceAll("\\s+", "");
 
         // 품목번호 추출
-        String itemReportNo = extractItemReportNo(ocrText);
+        String itemReportNo = extractItemReportNo(cleanOcrText);
 
         // 디버깅 로그
         System.out.println("OCR 전체 텍스트 =====================");
-        System.out.println(ocrText);
+        System.out.println(cleanOcrText);
         System.out.println("=======================================");
         System.out.println("추출된 itemReportNo: [" + itemReportNo + "]");
 
         if (itemReportNo == null) {
-            throw new DtoValidationException(ErrorCode.OCR_VISION_ERROR, ocrText);
+            throw new DtoValidationException(ErrorCode.OCR_VISION_ERROR, cleanOcrText);
         }
 
         // 영양정보 엔티티 조회
-        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, ocrText);
+        FoodNutrition food = getExactFoodByItemReportNo(itemReportNo, cleanOcrText);
 
         ScanRes res = ScanRes.builder()
                 .foodNmKr(food.getFoodNmKr())
                 .itemReportNo(itemReportNo)
                 .makerNm(food.getMakerNm())
-                .ocrText(ocrText)
+                .ocrText(cleanOcrText)
                 .build();
 
         return res;
@@ -190,13 +191,30 @@ public class ClovaOcrService {
      */
     private String extractItemReportNo(String ocrText) {
         // 정규식으로 12~16자리 숫자 중 첫 번째를 추출
-        Pattern pattern = Pattern.compile("\\d{12,16}");
+//        Pattern pattern = Pattern.compile("\\d{12,16}");
+//        Matcher matcher = pattern.matcher(ocrText);
+//        if (matcher.find()) {
+//            return matcher.group();
+//        }
+//
+//        return null;
+
+        // 숫자와 하이픈이 섞인 문자열을 찾기 위한 정규식
+        Pattern pattern = Pattern.compile("(\\d+-?)+");
         Matcher matcher = pattern.matcher(ocrText);
-        if (matcher.find()) {
-            return matcher.group();
+
+        // 찾은 문자열들 중에서 하나씩 검사
+        while (matcher.find()) {
+            String raw = matcher.group();
+            String cleaned = raw.replaceAll("-", "");
+
+            // 하이픈 제거 후 길이가 12~16자리인지 확인
+            if (cleaned.length() >= 10 && cleaned.length() <= 20 && cleaned.matches("\\d+")) {
+                return cleaned; // 조건에 맞으면 이걸 품목번호로 반환
+            }
         }
 
-        return null;
+        return null; // 조건에 맞는 게 없으면 null 반환
     }
 
     /**
