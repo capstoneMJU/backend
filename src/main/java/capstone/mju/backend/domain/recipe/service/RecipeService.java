@@ -16,7 +16,9 @@ import capstone.mju.backend.domain.recipe.repository.ScrapRecipeRepository;
 import capstone.mju.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,7 +129,8 @@ public class RecipeService {
     저장된 모든 레시피 조회
      */
     public RecipeListResponse getAllRecipes(User user, Pageable pageable) {
-        Page<ScrapRecipe> scrapRecipes = scrapRecipeRepository.findByUser(user, pageable);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ScrapRecipe> scrapRecipes = scrapRecipeRepository.findByUser(user, sortedPageable);
 
         List<RecipeDetailResponse> recipeResponses = scrapRecipes.stream()
                 .map(scrapRecipe -> {
@@ -144,6 +147,7 @@ public class RecipeService {
 
         return RecipeListResponse.from(recipeResponses, scrapRecipes.getTotalPages(), scrapRecipes.getTotalElements());
     }
+
 
 
     /*

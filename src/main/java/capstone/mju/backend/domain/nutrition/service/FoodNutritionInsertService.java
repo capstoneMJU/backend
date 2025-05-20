@@ -12,7 +12,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,9 @@ public class FoodNutritionInsertService {
     public void fetchAndSaveFoodData() {
         int page = 1;
         boolean hasNext = true;
+
+        // ① 기존 데이터의 itemReportNo 전부를 미리 메모리로 불러오기
+        Set<String> existingItemNos = new HashSet<>(foodRepository.findAllItemReportNos());
 
         while (hasNext) {
             String baseUrl = foodProperties.getBaseUrl();
@@ -52,7 +57,6 @@ public class FoodNutritionInsertService {
                 log.debug("응답 내용 = {}", json.substring(0, Math.min(json.length(), 500)));
 
                 JsonNode root = objectMapper.readTree(json);
-
                 JsonNode header = root.path("header");
                 String resultCode = header.path("resultCode").asText();
                 String resultMsg = header.path("resultMsg").asText();
@@ -62,24 +66,26 @@ public class FoodNutritionInsertService {
 
                 JsonNode items = root.path("body").path("items");
 
-                int count = items.isArray() ? items.size() : 0;
-                log.info("item count = {}", count);
-
-                if (count == 0) {
+                if (!items.isArray() || items.size() == 0) {
                     hasNext = false;
                     break;
                 }
 
-                Iterator<JsonNode> iterator = items.elements();
-                while (iterator.hasNext()) {
-                    JsonNode item = iterator.next();
-                    FoodNutrition food = parseFoodItem(item);
-                    log.debug("저장할 foodNmKr = {}", food.getFoodNmKr());
-                    // 중복 체크 후 저장
-                    if (!foodRepository.existsByItemReportNo(food.getItemReportNo())) {
-                        foodRepository.save(food);
+                for (JsonNode item : items) {
+                    String itemReportNo = item.path("ITEM_REPORT_NO").asText(null);
+
+                    // ② null 이거나 이미 저장된 번호라면 건너뛰기
+                    if (itemReportNo == null || existingItemNos.contains(itemReportNo)) {
+                        continue;
                     }
+
+                    // ③ 저장
+                    FoodNutrition food = parseFoodItem(item);
+                    foodRepository.save(food);
+                    existingItemNos.add(itemReportNo); // ④ 중복 방지를 위해 Set에도 추가
+                    log.debug("저장됨: {}", food.getFoodNmKr());
                 }
+
                 log.info("현재 페이지: {}", page);
                 page++;
 
@@ -89,6 +95,7 @@ public class FoodNutritionInsertService {
             }
         }
     }
+
 
 
 
