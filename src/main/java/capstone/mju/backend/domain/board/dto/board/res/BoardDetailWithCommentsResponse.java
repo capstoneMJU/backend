@@ -22,6 +22,9 @@ public class BoardDetailWithCommentsResponse {
     @Schema(description = "작성자 닉네임", example = "user123")
     private String nickname;
 
+    @Schema(description = "게시글 작성일 (yyyy-MM-dd)", example = "2025-05-21")
+    private String createdDate;
+
     @Schema(description = "게시글 내용", example = "제로콜라 추천드려요.")
     private String content;
 

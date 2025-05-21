@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ public class BoardService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     // 게시글 생성
@@ -113,6 +115,7 @@ public class BoardService {
                         .boardId(board.getId())
                         .title(board.getTitle())
                         .name(board.getUser().getUsername())
+                        .createdDate(board.getCreatedAt().format(formatter))
                         .content(board.getContent())
                         .likeCount(board.getLikeCount())
                         .commentCount(board.getCommentCount())
@@ -132,6 +135,7 @@ public class BoardService {
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .nickname(board.getUser().getUsername())
+                .createdDate(board.getCreatedAt().format(formatter))
                 .content(board.getContent())
                 .postImage(board.getPost_image())
                 .liked(liked)
@@ -149,6 +153,7 @@ public class BoardService {
                         .boardId(board.getId())
                         .title(board.getTitle())
                         .name(board.getUser().getUsername())
+                        .createdDate(board.getCreatedAt().format(formatter))
                         .content(board.getContent())
                         .likeCount(board.getLikeCount())
                         .commentCount(board.getCommentCount())

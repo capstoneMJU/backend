@@ -104,23 +104,6 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-
-
-//    // 게시글 상세 조회
-//    @Operation(summary = "게시글 상세 조회", description = "게시글 ID를 기반으로 상세 내용을 조회합니다.")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-//            @ApiResponse(responseCode = "404", description = "게시글이 존재하지 않음", content = @Content),
-//            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
-//    })
-//    @GetMapping("/{boardId}")
-//    public ResponseEntity<BoardDetailResponse> getBoardDetail(
-//            @PathVariable @Parameter(description = "조회할 게시글 UUID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584") UUID boardId) {
-//
-//        BoardDetailResponse response = boardService.getBoardDetail(boardId);
-//        return ResponseEntity.ok(response);
-//    }
-
     //카테고리별 게시글 조회 ( 최신순 + 무한 스크롤 )
     @Operation(summary = "카테고리별 게시글 목록 조회", description = "카테고리별로 최근 게시글을 10개씩 Slice로 조회합니다.")
     @ApiResponses({
