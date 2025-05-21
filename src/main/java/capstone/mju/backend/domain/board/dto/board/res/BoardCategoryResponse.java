@@ -22,6 +22,9 @@ public class BoardCategoryResponse {
     @Schema(description = "작성자 이름", example = "제로픽")
     private String name;
 
+    @Schema(description = "게시글 작성일 (yyyy-MM-dd)", example = "2025-05-21")
+    private String createdDate;
+
     @Schema(description = "게시글 내용", example = "냉장고 정리 요령 공유합니다.")
     private String content;
 
@@ -30,4 +33,5 @@ public class BoardCategoryResponse {
 
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
+
 }
