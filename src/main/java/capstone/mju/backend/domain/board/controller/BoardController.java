@@ -171,5 +171,22 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "내가 쓴 게시글 목록 조회", description = "사용자가 작성한 게시글을 최근 순으로 Slice로 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 사용자", content = @Content),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content)
+    })
+    @GetMapping("/my")
+    public ResponseEntity<Slice<BoardCategoryResponse>> getMyBoards(
+            @AuthenticatedUser User user,  // 또는 @CurrentUser 등 커스텀 어노테이션
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        UUID userId = user.getId(); // 인증 컨텍스트에서 추출
+        Slice<BoardCategoryResponse> result = boardService.getBoardsByUser(userId, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
 }

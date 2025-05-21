@@ -16,6 +16,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findById(UUID id); //ID 조회
     @EntityGraph(attributePaths = {"user"}) //N+1문제 해결
     Slice<Board> findByCategoryNameOrderByCreatedAtDesc(Category category, Pageable pageable);
-
+    Slice<Board> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
 
 }

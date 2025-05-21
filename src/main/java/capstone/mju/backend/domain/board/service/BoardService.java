@@ -140,6 +140,20 @@ public class BoardService {
                 .comments(comments)
                 .build();
     }
+    @Transactional(readOnly = true)
+    public Slice<BoardCategoryResponse> getBoardsByUser(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        return boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(board -> BoardCategoryResponse.builder()
+                        .boardId(board.getId())
+                        .title(board.getTitle())
+                        .name(board.getUser().getUsername())
+                        .content(board.getContent())
+                        .likeCount(board.getLikeCount())
+                        .commentCount(board.getCommentCount())
+                        .build());
+    }
 
     //----------------------예외처리------------------------------
     private void validateAuthenticatedUser(User user) {
