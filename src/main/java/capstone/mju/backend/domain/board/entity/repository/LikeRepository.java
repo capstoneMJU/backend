@@ -20,7 +20,5 @@ public interface LikeRepository extends JpaRepository<Like, UUID> {
     Slice<Like> findAllByUser(User user, Pageable pageable);
 
     boolean existsByBoardAndUser(Board board, User user);
-    int countByBoard(Board board);
-
 
 }

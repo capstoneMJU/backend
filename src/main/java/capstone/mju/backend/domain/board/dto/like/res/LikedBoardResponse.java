@@ -1,6 +1,7 @@
 package capstone.mju.backend.domain.board.dto.like.res;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,15 +12,24 @@ import java.util.UUID;
 @Schema(description = "내가 좋아요한 게시글 응답")
 public class LikedBoardResponse {
 
-    @Schema(description = "게시글 ID", example = "23afcd67-12fa-4dd3-a5ec-78634f43f231")
-    private UUID boardId;
+    @Schema(description = "게시글 ID", example = "ec54a7b6-2a47-4c77-b294-72ea4dcb6584")
+    private UUID boardId; // boardId 추가
 
-    @Schema(description = "게시글 제목", example = "제로사이다 후기")
+    @Schema(description = "게시글 제목", example = "자취생을 위한 꿀팁")
     private String title;
 
-    @Schema(description = "게시글 내용", example = "제로사이다 진짜 맛있어요")
+    @Schema(description = "작성자 이름", example = "제로픽")
+    private String name;
+
+    @Schema(description = "게시글 작성일 (yyyy-MM-dd)", example = "2025-05-21")
+    private String createdDate;
+
+    @Schema(description = "게시글 내용", example = "냉장고 정리 요령 공유합니다.")
     private String content;
 
-    @Schema(description = "작성자 닉네임", example = "제로유저")
-    private String author;
+    @Schema(description = "좋아요 수", example = "15")
+    private int likeCount;
+
+    @Schema(description = "댓글 수", example = "3")
+    private int commentCount;
 }

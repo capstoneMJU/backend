@@ -54,7 +54,7 @@ public final class LikeController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    @GetMapping("/me")
+    @GetMapping("/my")
     public ResponseEntity<Slice<LikedBoardResponse>> getMyLikedBoards(
             @AuthenticatedUser @Parameter(hidden = true) User user,
             @RequestParam(defaultValue = "0") int page,
