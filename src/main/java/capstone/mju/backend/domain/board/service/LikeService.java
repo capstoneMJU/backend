@@ -65,11 +65,15 @@ public class LikeService {
         return likeRepository.findAllByUser(user, pageable)
                 .map(like -> {
                     Board board = like.getBoard();
+
                     return LikedBoardResponse.builder()
                             .boardId(board.getId())
                             .title(board.getTitle())
+                            .name(board.getUser().getUsername())
+                            .createdDate(board.getCreatedAt().toLocalDate().toString())
                             .content(board.getContent())
-                            .author(board.getUser().getUsername())
+                            .likeCount(board.getLikeCount())
+                            .commentCount(board.getCommentCount())
                             .build();
                 });
     }
