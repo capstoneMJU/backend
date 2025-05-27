@@ -36,7 +36,7 @@ public class OpenAiService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     public RecipeDetailResponse createRecipePromptAndTitle(String title, String ingredients) {
         String prompt = String.format(
-                "%s를 사용해서 저칼로리 레시피를 만들어줘. " +
+                "한국어로 %s를 사용해서 저칼로리 레시피를 만들어줘. " +
                         "요리 제목(title)을 먼저 한 줄로 써주고, " +
                         "그 다음에 요리 순서(steps)를 번호를 매겨 (1. 2. 3.) 단계별로 구체적으로 작성해줘. " +
                         "불필요한 설명 없이 'title:','ingredients: ', 'steps:' 형식으로 깔끔하게 구분해서 작성해줘. " +
@@ -50,7 +50,7 @@ public class OpenAiService {
 
     public List<RecipeSuggestionResponse> generateRecipeSuggestions(String ingredients) {
         String prompt = String.format("""
-                    아래 재료를 사용해서 만들 수 있는 저칼로리 요리 3~5개를 추천해줘.
+                    한국어로 아래 재료를 사용해서 만들 수 있는 저칼로리 요리 3~5개를 추천해줘.
                     각 요리는 제목(title)과 필요한 재료들(ingredients)을 쉼표로 구분한 문자열로 제공해.
                     아래 JSON 형식으로 응답해줘:
                     [
