@@ -34,4 +34,6 @@ public class BoardCategoryResponse {
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
 
+    @Schema(description = "현재 사용자가 좋아요 눌렀는지 여부", example = "true")
+    private boolean liked;
 }

@@ -2,6 +2,8 @@ package capstone.mju.backend.domain.ocr.service;
 
 import capstone.mju.backend.domain.common.error.ErrorCode;
 import capstone.mju.backend.domain.common.exception.CustomException;
+import capstone.mju.backend.domain.common.exception.ForbiddenException;
+import capstone.mju.backend.domain.common.exception.NotFoundException;
 import capstone.mju.backend.domain.nutrition.dto.res.ScrapExistRes;
 import capstone.mju.backend.domain.nutrition.entity.FoodNutrition;
 import capstone.mju.backend.domain.nutrition.entity.repository.FoodNutritionRepository;
@@ -28,11 +30,11 @@ public class OcrScrapService {
     @Transactional
     public UUID scrap(User user, Long foodId) {
         FoodNutrition food = foodNutritionRepository.findById(foodId)
-                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.FOOD_NOT_FOUND));
 
         boolean alreadyExists = ocrScrapRepository.existsByUserAndFoodNutrition(user, food);
         if (alreadyExists) {
-            throw new CustomException(ErrorCode.ALREADY_SCRAPPED);
+            throw new ForbiddenException(ErrorCode.ALREADY_SCRAPPED);
         }
 
         OcrScrap scrap = OcrScrap.builder()
@@ -64,17 +66,17 @@ public class OcrScrapService {
     @Transactional
     public void deleteScrap(User user, Long foodId) {
         FoodNutrition food = foodNutritionRepository.findById(foodId)
-                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.FOOD_NOT_FOUND));
 
         OcrScrap scrap = ocrScrapRepository.findByUserAndFoodNutrition(user, food)
-                .orElseThrow(() -> new CustomException(ErrorCode.SCRAP_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SCRAP_NOT_FOUND));
 
         ocrScrapRepository.delete(scrap);
     }
 
     public ScrapExistRes existsScrap(User user, Long foodId) {
         FoodNutrition food = foodNutritionRepository.findById(foodId)
-                .orElseThrow(() -> new CustomException(ErrorCode.FOOD_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.FOOD_NOT_FOUND));
 
         boolean exists = ocrScrapRepository.existsByUserAndFoodNutrition(user, food);
 
