@@ -113,11 +113,12 @@ public class BoardController {
     })
     @GetMapping("/scroll")
     public ResponseEntity<Slice<BoardCategoryResponse>> getBoardsByCategory(
+            @AuthenticatedUser @Parameter(hidden = true) User user,
             @RequestParam Category category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Slice<BoardCategoryResponse> result = boardService.getBoardsByCategory(category, page, size);
+        Slice<BoardCategoryResponse> result = boardService.getBoardsByCategory(category, page, size,user);
         return ResponseEntity.ok(result);
     }
 

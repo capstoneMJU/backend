@@ -32,7 +32,7 @@ public class LikeService {
 
     //좋아요
     @Transactional
-    public void likeBoard(UUID boardId, User user) {
+    public boolean likeBoard(UUID boardId, User user) {
         Board board = findBoardOrThrow(boardId);
 
         validateDuplicateLike(user, board);
@@ -44,8 +44,13 @@ public class LikeService {
 
         likeRepository.save(like);
         board.increaseLikeCount(); // 좋아요 수 증가
+
         log.info("게시글 좋아요 등록 - boardId={}, user={}", boardId, user.getEmail());
+
+        // 무조건 user가 좋아요를 누른 것이므로 true 반환
+        return true;
     }
+
 
     // 좋아요 삭제
     @Transactional

@@ -1,11 +1,14 @@
 package capstone.mju.backend.domain.board.controller;
 
+import capstone.mju.backend.domain.board.dto.like.res.LikeResponse;
 import capstone.mju.backend.domain.board.dto.like.res.LikedBoardResponse;
 import capstone.mju.backend.domain.board.service.LikeService;
 import capstone.mju.backend.domain.user.domain.User;
 import capstone.mju.backend.global.auth.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,15 +29,17 @@ public final class LikeController {
     private final LikeService likeService;
 
     //좋아요 기능
-    @Operation(summary = "게시글 좋아요", description = "특정 게시글에 좋아요를 등록합니다.")
-    @ApiResponse(responseCode = "201", description = "좋아요 등록 성공")
+    @Operation(summary = "게시글 좋아요", description = "특정 게시글에 좋아요를 등록하고 로그인 사용자 여부를 반환합니다.")
+    @ApiResponse(responseCode = "201", description = "좋아요 등록 성공",
+            content = @Content(schema = @Schema(implementation = LikeResponse.class)))
     @PostMapping("/{boardId}")
-    public ResponseEntity<Void> likeBoard(
+    public ResponseEntity<LikeResponse> likeBoard(
             @AuthenticatedUser @Parameter(hidden = true) User user,
             @PathVariable UUID boardId) {
 
-        likeService.likeBoard(boardId, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        boolean liked = likeService.likeBoard(boardId, user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new LikeResponse(liked));
     }
 
     //좋아요 취소 기능

@@ -28,8 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -107,20 +106,34 @@ public class BoardService {
 
     //카테고리 별 게시글 조회
     @Transactional(readOnly = true)
-    public Slice<BoardCategoryResponse> getBoardsByCategory(Category category, int page, int size) {
+    public Slice<BoardCategoryResponse> getBoardsByCategory(Category category, int page, int size, User user) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        return boardRepository.findByCategoryNameOrderByCreatedAtDesc(category, pageable)
-                .map(board -> BoardCategoryResponse.builder()
-                        .boardId(board.getId())
-                        .title(board.getTitle())
-                        .name(board.getUser().getUsername())
-                        .createdDate(board.getCreatedAt().format(formatter))
-                        .content(board.getContent())
-                        .likeCount(board.getLikeCount())
-                        .commentCount(board.getCommentCount())
-                        .build());
+        Slice<Board> boardSlice = boardRepository.findByCategoryNameOrderByCreatedAtDesc(category, pageable);
+
+        Set<UUID> likedBoardIds;
+        if (user != null) {
+            List<UUID> boardIds = boardSlice.getContent().stream()
+                    .map(Board::getId)
+                    .toList();
+
+            likedBoardIds = new HashSet<>(likeRepository.findLikedBoardIdsByUserAndBoardIds(user.getId(), boardIds));
+        } else {
+            likedBoardIds = Collections.emptySet();
+        }
+
+        return boardSlice.map(board -> BoardCategoryResponse.builder()
+                .boardId(board.getId())
+                .title(board.getTitle())
+                .name(board.getUser().getUsername())
+                .createdDate(board.getCreatedAt().format(formatter))
+                .content(board.getContent())
+                .likeCount(board.getLikeCount())
+                .commentCount(board.getCommentCount())
+                .liked(likedBoardIds.contains(board.getId())) // 여기서 effectively final 필요
+                .build());
     }
+
     //전체 항목 조회
     @Transactional(readOnly = true)
     public BoardDetailWithCommentsResponse getBoardDetailWithComments(User user, UUID boardId) {
