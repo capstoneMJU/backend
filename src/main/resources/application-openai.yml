@@ -1,6 +1,0 @@
-openai:
-  api-key: "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"   # 👉 OpenAI API Key 입력
-  base-url: "https://api.openai.com"
-  model: "gpt-3.5-turbo"
-  temperature: 0.7
-  max-tokens: 1500
